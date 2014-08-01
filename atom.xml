@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-01T17:16:57+08:00</updated>
+  <updated>2014-08-02T02:03:13+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -67,6 +67,129 @@ SLVerifySignedServerKeyExchange(SSLContext *ctx, bool isRsa, SSLBuffer signedPar
 </code></pre>
 
 <p>很明显，代码中有2个goto fail，我们非常不希望产生类似的bug，另外，这种bug往往与所有的条件语句息息相关，因此也更容易发现；</p>
+
+<h3>Yoda conditions</h3>
+
+<p>尽量避免Yoda条件语句的使用，当一个常量和一个变量比较的时候我们通常会使用Yoda条件判断，就像我们说“如果蓝色的是天空”或者“如果高就是男人”来替换“如果天空是蓝色的”或者“如果男人就是个子高”</p>
+
+<p>优先：</p>
+
+<pre><code>if ([myValue isEqual:@42]) { ...
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>if ([@42 isEqual:myValue]) { ...
+</code></pre>
+
+<h3>nil 和 BOOL 的检查</h3>
+
+<p>类似于 Yoda 条件语句，nil判断一致处于争论当中，一些比较有名的库常常是使用如下方式检查是否为nil：</p>
+
+<pre><code>if (nil == myValue){...
+</code></pre>
+
+<p>可能有人会认为nil这是一个没有值或者类似于Yoda condition 中的常量，之说以这样做，是因为可以避免产生一些难调试的bug，看看如下的代码:</p>
+
+<pre><code>if(myValue == nil){...
+</code></pre>
+
+<p>输入时往往容易产生这种状况:</p>
+
+<pre><code>if(myValue = nil){...
+</code></pre>
+
+<p>这将是一种有效的赋值，如果你是一名有经验的程序员，你会发现这个bug很难调试(这很有可能伴随着一些相关的副作用),但是当nil在左边的时候，这种情形很难再发生，据说如果程序员使用这种方法，她/他很早就明白了这种做法的意图，因此再次输入时候特别容易检测出这个问题。</p>
+
+<p>不仅仅如此，为了避免所有的这些使用混乱得方法同时让人根本没有时间去怀疑，最好还是用检查标记。因为 nil 相当于 no，所以根本没有必要在条件语句中比较他们。同样，也不需要比较yes，因为yes 等价于 1 同时 bool 变量可以转换为8位因为 bool 其实是char变量</p>
+
+<p>优先:</p>
+
+<pre><code>if (someObject) {...
+if (![someObject boolValue]){...
+if (!someObject){...
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>if(someObject == Yes) {...
+if(myRawValue == Yes) {...
+if ([]someObject boolValue] == NO){...
+</code></pre>
+
+<h3>黄金路径</h3>
+
+<p>当我们编写条件语句时，左边的语句应该是 黄金搬的或者是快乐搬的路径，意思是说，不要构建if条件语句的温床，多个返回值的还是可以的，这可以避免随之增长的复杂性同时可以使得代码的可读性更高因为这个方法最重要的部分并不是在构建分支的温床，但是你可以编写一份类似的及处理相关的代码.</p>
+
+<p>优先:</p>
+
+<pre><code>    -(void)someMethod{
+    if (![someOther boolValue]){
+        return;
+    }
+    //do someting important
+    }       
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>    -(void)someMethod {
+        if ([]someOther boolValue])
+        //do something important
+    }
+    }
+</code></pre>
+
+<h3>复杂条件语句</h3>
+
+<p>当你有一个复杂的语句判断时，尤其在if语句中，你应该分散他们并且赋给他们一个bool变量来使得逻辑判断更加清晰</p>
+
+<pre><code>BOOL nameContainsSwift  = [sessionName      containsString:@"Swift"];
+BOOL isCurrentYear      = [sessionDateCompontents year] == 2014;
+BOOL isSwiftSession     = nameContainsSwift &amp;&amp; isCurrentYear;
+
+if (isSwiftSession) {
+// Do something very cool
+}
+</code></pre>
+
+<h3>三元运算</h3>
+
+<p>三元运算？的使用往往是因为它使得代码更加清晰和整洁，简单的条件判断通常是可以估算的，在if语句中或者转换的实例变量，估算多重条件语句时通常是更易理解的。</p>
+
+<p>优先:</p>
+
+<pre><code>    result = a &gt; b ? x : y;
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>    result = a &gt; b ? x = c &gt; d ? c : d : y;
+</code></pre>
+
+<p>优先:</p>
+
+<pre><code>    result = object ? : [self createObject]
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>    result = object ?object : [self createObject];
+</code></pre>
+
+<h3>error 处理</h3>
+
+<p>如果方法返回的是一个error 参数时 ，检查返回值，而不是error变量</p>
+
+<pre><code>NSError *error = nil;
+if(![self trySomethingWithError:&amp;error]){
+        //Handle Error
+}
+</code></pre>
+
+<p>更重要的是，苹果的一些api会写入一些垃圾值给error参数(if non-NULL)在成功的情况下，所以检测error容易导致错误的赋值（和紧随的崩溃）</p>
+
+<h2>Case 语句</h2>
 ]]></content>
   </entry>
   
