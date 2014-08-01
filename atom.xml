@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-01T15:15:22+08:00</updated>
+  <updated>2014-08-01T16:35:23+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -111,33 +111,6 @@
             strpos("Hello world!","world");
     *   
 </code></pre>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[How to Improve iOS]]></title>
-    <link href="http://youngforever1990.github.io/blog/2014/07/31/how-to-improve-ios/"/>
-    <updated>2014-07-31T15:38:41+08:00</updated>
-    <id>http://youngforever1990.github.io/blog/2014/07/31/how-to-improve-ios</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何提高iOS]]></title>
-    <link href="http://youngforever1990.github.io/blog/2014/07/31/ru-he-ti-gao-ios/"/>
-    <updated>2014-07-31T15:38:28+08:00</updated>
-    <id>http://youngforever1990.github.io/blog/2014/07/31/ru-he-ti-gao-ios</id>
-    <content type="html"><![CDATA[
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[如何提高iOS 转自唐巧]]></title>
-    <link href="http://youngforever1990.github.io/blog/2014/07/31/ru-he-ti-gao-ios-zhuan-zi-tang-qiao/"/>
-    <updated>2014-07-31T15:33:59+08:00</updated>
-    <id>http://youngforever1990.github.io/blog/2014/07/31/ru-he-ti-gao-ios-zhuan-zi-tang-qiao</id>
-    <content type="html"><![CDATA[
 ]]></content>
   </entry>
   
