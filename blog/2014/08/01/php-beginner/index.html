@@ -1,208 +1,93 @@
+<h3>php</h3>
 
-<!DOCTYPE html>
-<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
-<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
-<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
-<head>
-  <meta charset="utf-8">
-  <title>Php Beginner - 黄杨的技术博客</title>
-  <meta name="author" content="Young">
+<h4>php 脚本以&lt;?php 开头，以?></h4>
 
-  
-  <meta name="description" content="
-">
-  
+<p>&lt;?php
+//此处是php代码
+?></p>
 
-  <!-- http://t.co/dKP3o1e -->
-  <meta name="HandheldFriendly" content="True">
-  <meta name="MobileOptimized" content="320">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  
-  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/08/01/php-beginner">
-  <link href="/favicon.png" rel="icon">
-  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
-  <link href="/atom.xml" rel="alternate" title="黄杨的技术博客" type="application/atom+xml">
-  <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
-  <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
-<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
-
-  
-
-</head>
-
-<body   >
-  <header role="banner"><hgroup>
-  <h1><a href="/">黄杨的技术博客</a></h1>
-  
-    <h2>持之以恒</h2>
-  
-</hgroup>
-
-</header>
-  <nav role="navigation"><ul class="subscription" data-subscription="rss">
-  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
-  
-</ul>
-  
-<form action="https://www.google.com/search" method="get">
-  <fieldset role="search">
-    <input type="hidden" name="q" value="site:youngforever1990.github.io" />
-    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
-  </fieldset>
-</form>
-  
-<ul class="main-navigation">
-  <li><a href="/">Blog</a></li>
-  <li><a href="/blog/archives">Archives</a></li>
+<ul>
+<li>$color 用来声明一个变量</li>
+<li>echo用来输出类似 iOS NSlog printf 输出语句</li>
 </ul>
 
-</nav>
-  <div id="main">
-    <div id="content">
-      <div>
-<article class="hentry" role="article">
-  
-  <header>
-    
-      <h1 class="entry-title">Php Beginner</h1>
-    
-    
-      <p class="meta">
-        
+
+<h4>php变量规则:</h4>
+
+<ul>
+<li>变量以$符号开头，以后是变量的名称</li>
+<li>变量名称必须以字母或下划线开头</li>
+<li>变量名称不能以数字开头</li>
+<li>变量名称只能包含字母数字字符和下划线（A-z、0-9 以及 _）</li>
+<li>变量名称对大小写敏感（$y 与 $Y 是两个不同的变量）</li>
+</ul>
 
 
+<h5>注释： php变量名称 对大小写敏感</h5>
+
+<h4>php变量的创建</h4>
+
+<ul>
+<li>php 没有创建变量的命令，变量会在首次为其赋值时被创建</li>
+</ul>
 
 
+<h4>php变量作用域</h4>
+
+<ul>
+<li>函数之外声明的变量拥有 Global 作用域，只能在函数以外进行访问。</li>
+<li>函数内部声明的变量拥有 LOCAL 作用域，只能在函数内部进行访问。</li>
+</ul>
 
 
+<h4>global</h4>
+
+<ul>
+<li>global 关键词用于访问函数内的全局变量。</li>
+</ul>
 
 
-  
+<h4>static</h4>
+
+<ul>
+<li>通常，当函数完成/执行后，会删除所有变量。不过，有时我需要不删除某个局部变量。实现这一点需要更进一步的工作。要完成这一点，请在您首次声明变量时使用 static 关键词</li>
+</ul>
 
 
-<time datetime="2014-08-01T15:00:30+08:00" pubdate data-updated="true">Aug 1<sup>st</sup>, 2014</time>
-        
-      </p>
-    
-  </header>
+<h4>echo 和 print 之间的差异</h4>
+
+<ul>
+<li>echo- 能够输出一个以上的字符串</li>
+<li>print-只能输出一个字符串，并始终返回1</li>
+</ul>
 
 
-<div class="entry-content">
-</div>
+<h4>var_dump()返回变量的数据类型和值</h4>
 
+<h4>php 创建对象</h4>
 
-  <footer>
-    <p class="meta">
-      
-  
+<pre><code>    &lt;?php
+    class Car
+    {
+        var $color;
+        function Car($color="green") {
+        $this-&gt;color = $color;
+        }
+        function what_color(){
+            return $this-&gt;color;
+        }
+    }
+    ?&gt;
+</code></pre>
 
-<span class="byline author vcard">Posted by <span class="fn">Young</span></span>
+<h4>php NULL 值</h4>
 
-      
+<p>NULL 值标示变量是否为空。也用于区分空字符串与空值数据库</p>
 
+<h4>php 字符串函数</h4>
 
-
-
-
-
-
-
-  
-
-
-<time datetime="2014-08-01T15:00:30+08:00" pubdate data-updated="true">Aug 1<sup>st</sup>, 2014</time>
-      
-
-
-    </p>
-    
-      <div class="sharing">
-  
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/08/01/php-beginner/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/08/01/php-beginner/" >Tweet</a>
-  
-  
-  
-</div>
-
-    
-    <p class="meta">
-      
-        <a class="basic-alignment left" href="/blog/2014/07/31/how-to-improve-ios/" title="Previous Post: how to improve iOS">&laquo; how to improve iOS</a>
-      
-      
-    </p>
-  </footer>
-</article>
-
-</div>
-
-<aside class="sidebar">
-  
-    <section>
-  <h1>Recent Posts</h1>
-  <ul id="recent_posts">
-    
-      <li class="post">
-        <a href="/blog/2014/08/01/php-beginner/">Php Beginner</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/31/how-to-improve-ios/">How to Improve iOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/31/ru-he-ti-gao-ios/">如何提高iOS</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2014/07/31/ru-he-ti-gao-ios-zhuan-zi-tang-qiao/">如何提高iOS 转自唐巧</a>
-      </li>
-    
-  </ul>
-</section>
-
-
-
-
-
-  
-</aside>
-
-
-    </div>
-  </div>
-  <footer role="contentinfo"><p>
-  Copyright &copy; 2014 - Young -
-  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
-</p>
-
-</footer>
-  
-
-
-
-
-
-
-
-  <script type="text/javascript">
-    (function(){
-      var twitterWidgets = document.createElement('script');
-      twitterWidgets.type = 'text/javascript';
-      twitterWidgets.async = true;
-      twitterWidgets.src = '//platform.twitter.com/widgets.js';
-      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
-    })();
-  </script>
-
-
-
-
-
-</body>
-</html>
+<pre><code>    * strlen() 字符串长度
+    * strpos() 函数用于检索字符串内指定的字符或文本。
+            strpos("Hello world!","world");
+    *   
+</code></pre>
