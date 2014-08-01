@@ -2,17 +2,41 @@
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/01/php-beginner/</loc>
+    <lastmod>2014-08-01T15:00:30+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/07/31/how-to-improve-ios/</loc>
+    <lastmod>2014-07-31T15:38:41+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/07/31/ru-he-ti-gao-ios/</loc>
+    <lastmod>2014-07-31T15:38:28+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/07/31/ru-he-ti-gao-ios-zhuan-zi-tang-qiao/</loc>
+    <lastmod>2014-07-31T15:33:59+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
   
   <url>
     <loc>http://youngforever1990.github.io/blog/archives/</loc>
-    <lastmod>2014-07-30T17:10:39+08:00</lastmod>
+    <lastmod>2014-08-01T15:02:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://youngforever1990.github.io/</loc>
-    <lastmod>2014-07-30T17:10:39+08:00</lastmod>
+    <lastmod>2014-08-01T15:02:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
