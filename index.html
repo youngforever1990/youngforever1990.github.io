@@ -9,11 +9,7 @@
   <meta name="author" content="Young">
 
   
-  <meta name="description" content="php php 脚本以&lt;?php 开头，以?> &lt;?php
-//此处是php代码
-?> $color 用来声明一个变量
-echo用来输出类似 iOS NSlog printf 输出语句 php变量规则: 变量以$符号开头，以后是变量的名称
-变量名称必须以字母或下划线开头 &hellip;">
+  <meta name="description" content="条件语句 条件语句尽量都加上括号来写以避免错误产生，尽管它可以不需要括号。 优先： if (!error) { return success; } 避免： if (!error) return success; 或者 if (!error) return success; 今年2月，著名的goto &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -69,6 +65,90 @@ echo用来输出类似 iOS NSlog printf 输出语句 php变量规则: 变量以$
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/01/zen-yu-object-c-bian-cheng-yi-zhu/">Zen Yu Object C Bian Cheng Yi Zhu</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>条件语句</h2>
+
+<p>条件语句尽量都加上括号来写以避免错误产生，尽管它可以不需要括号。</p>
+
+<h4>优先：</h4>
+
+<pre><code>    if (!error) {
+        return success;
+    }
+</code></pre>
+
+<h4>避免：</h4>
+
+<pre><code>    if (!error)
+        return success;
+
+    或者
+
+    if (!error) return success;
+</code></pre>
+
+<p>今年2月，著名的goto fail事件在苹果的SSL/TLS实现中发现了，这个bug的出现是因为在if语句中重复使用了goto 语句，在父类语句中如果包裹if 的话可以避免这个问题产生</p>
+
+<p>代码摘录：</p>
+
+<pre><code>    static OSStatus
+SLVerifySignedServerKeyExchange(SSLContext *ctx, bool isRsa, SSLBuffer signedParams,
+                             uint8_t *signature, UInt16 signatureLen)
+{
+        OSStatus        err;
+        ...
+
+        if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;serverRandom)) != 0)
+            goto fail;
+        if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;signedParams)) != 0)
+            goto fail;
+            goto fail;
+        if ((err = SSLHashSHA1.final(&amp;hashCtx, &amp;hashOut)) != 0)
+            goto fail;
+        ...
+
+        fail:
+            SSLFreeBuffer(&amp;signedHashes);
+            SSLFreeBuffer(&amp;hashCtx);
+            return err;
+}
+</code></pre>
+
+<p>很明显，代码中有2个goto fail，我们非常不希望产生类似的bug，另外，这种bug往往与所有的条件语句息息相关，因此也更容易发现；</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -209,6 +289,10 @@ echo用来输出类似 iOS NSlog printf 输出语句 php变量规则: 变量以$
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/01/zen-yu-object-c-bian-cheng-yi-zhu/">Zen Yu Object C Bian Cheng Yi Zhu</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/01/php-beginner/">Php Beginner</a>

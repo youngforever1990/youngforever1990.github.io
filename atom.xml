@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-01T16:35:23+08:00</updated>
+  <updated>2014-08-01T17:16:57+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -12,6 +12,63 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Zen Yu Object C Bian Cheng Yi Zhu]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/08/01/zen-yu-object-c-bian-cheng-yi-zhu/"/>
+    <updated>2014-08-01T00:00:00+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/08/01/zen-yu-object-c-bian-cheng-yi-zhu</id>
+    <content type="html"><![CDATA[<h2>条件语句</h2>
+
+<p>条件语句尽量都加上括号来写以避免错误产生，尽管它可以不需要括号。</p>
+
+<h4>优先：</h4>
+
+<pre><code>    if (!error) {
+        return success;
+    }
+</code></pre>
+
+<h4>避免：</h4>
+
+<pre><code>    if (!error)
+        return success;
+
+    或者
+
+    if (!error) return success;
+</code></pre>
+
+<p>今年2月，著名的goto fail事件在苹果的SSL/TLS实现中发现了，这个bug的出现是因为在if语句中重复使用了goto 语句，在父类语句中如果包裹if 的话可以避免这个问题产生</p>
+
+<p>代码摘录：</p>
+
+<pre><code>    static OSStatus
+SLVerifySignedServerKeyExchange(SSLContext *ctx, bool isRsa, SSLBuffer signedParams,
+                             uint8_t *signature, UInt16 signatureLen)
+{
+        OSStatus        err;
+        ...
+
+        if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;serverRandom)) != 0)
+            goto fail;
+        if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;signedParams)) != 0)
+            goto fail;
+            goto fail;
+        if ((err = SSLHashSHA1.final(&amp;hashCtx, &amp;hashOut)) != 0)
+            goto fail;
+        ...
+
+        fail:
+            SSLFreeBuffer(&amp;signedHashes);
+            SSLFreeBuffer(&amp;hashCtx);
+            return err;
+}
+</code></pre>
+
+<p>很明显，代码中有2个goto fail，我们非常不希望产生类似的bug，另外，这种bug往往与所有的条件语句息息相关，因此也更容易发现；</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Php Beginner]]></title>
