@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-03T01:59:13+08:00</updated>
+  <updated>2014-08-03T02:07:40+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Objective-C 编程艺术: 类]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class/"/>
+    <updated>2014-08-03T02:06:18+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Zen Yu Object C Bian Cheng Yi Zhu]]></title>
