@@ -169,4 +169,219 @@ if(![self trySomethingWithError:&amp;error]){
 
 <p>更重要的是，苹果的一些api会写入一些垃圾值给error参数(if non-NULL)在成功的情况下，所以检测error容易导致错误的赋值（和紧随的崩溃）</p>
 
-<h2>Case 语句</h2>
+<h2>分情形 语句</h2>
+
+<p>对于分情形语句括号并不是必须的，除非编译器强制需要。当一个情形里包含代码不止一行时，括号是必须添加的。</p>
+
+<pre><code>objective-c
+    switch (condition) {
+        case 1:
+    // ...
+    break;
+case 2: {
+    // ...
+    // 多行代码时最好加上括号
+    break;
+   }
+case 3:
+    // ...
+    break;
+default: 
+    // ...
+    break;
+}
+</code></pre>
+
+<p>当同样的代码需要在多种情况下使用时，你应该使用fall-through。fall-through 就是移除某一个 break语句，因此允许执行到下一种情形。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>objective-c
+</span><span class='line'>switch (condition) {
+</span><span class='line'>    case 1:
+</span><span class='line'>    case 2:
+</span><span class='line'>        // code executed for values 1 and 2
+</span><span class='line'>        break;
+</span><span class='line'>    default: 
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在switch语句中使用枚举类型时，‘default’语句并不是必须的，例如:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>objective-c
+</span><span class='line'>switch (menuType) {
+</span><span class='line'>    case ZOCEnumNone:
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>    case ZOCEnumValue1:
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>    case ZOCEnumValue2:
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而且，尽量避免使用default 情形语句，如果有一个新值加到枚举中时，程序员马上收到一个警告的通知。</p>
+
+<h3>枚举类型</h3>
+
+<p>当我们使用枚举时，推荐使用新的固定的基本类型来定义 因为它具有强类型检查和代码完整性，sdk现在已经包含了一个 macro 来 使得使用 fixed underlying 类型更加便利 &ndash;<code>NS_ENUM()</code></p>
+
+<p>例如:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>objective-c
+</span><span class='line'>typedef NS_ENUM(NSUInteger, ZOCMachineState) {
+</span><span class='line'>    ZOCMachineStateNone,
+</span><span class='line'>    ZOCMachineStateIdle,
+</span><span class='line'>    ZOCMachineStateRunning,
+</span><span class='line'>    ZOCMachineStatePaused
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>命名</h1>
+
+<h2>通用规范</h2>
+
+<p>苹果命名规范尽可能遵循<a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html">memory management rules</a> (<a href="http://stackoverflow.com/a/2865194/340508">NARC</a>)</p>
+
+<p>长，描述性强的方法名和变量名 当然是最好的。</p>
+
+<p>优先：</p>
+
+<pre><code>```
+objective-c
+UIButton *settingsButton;
+```
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>```objective-c
+    UIButton *setBut;
+```
+</code></pre>
+
+<h2>常量</h2>
+
+<p>常量应该遵守驼峰规则并且提前确认类名使得更加清晰。</p>
+
+<p>优先：</p>
+
+<pre><code>static const NSTimeInterval ZOCSignInViewControllerFadeOutAnimationDuration = 0.4;
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>static const NSTimeInterval fadeOutTime = 0.4;
+</code></pre>
+
+<p>常量通常更多是使用在字符串变量或者数字变量，因为这样就允许更容易使用经常需要使用的变量，同时也可以更快速的区修改和查找。常量应该声明成 <code>static</code> 静态变量而不是<code>#define</code>除非明确要求必须使用宏。</p>
+
+<p>优先：</p>
+
+<pre><code>static NSString * const ZOCCacheControllerDidClearCacheNotification = @"ZOCCacheControllerDidClearCacheNotification";
+static const CGFloat ZOCImageThumbnailHeight = 50.0f;
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>#define CompanyName @"Apple Inc."
+#define magicNumber 42
+</code></pre>
+
+<p>常量显示在外面时 ，应该在接口文件里使用如下方式：</p>
+
+<pre><code>extern NSString *const ZOCCacheControllerDidClearCacheNotification;
+</code></pre>
+
+<p>然而 之前赋值的常量语句 应该写在 实现文件里</p>
+
+<p>你只需要使用命名空间使得常量是公共的，尽管在实现文件里使用的常量需要遵循一种模式，但是根本不需要遵守这个规则。</p>
+
+<h2>方法</h2>
+
+<p>在方法签名中，在方法类型后面应该需要一个空格(<code>-</code>/<code>+</code> symbol),在方法片段中最好应该有一个空格(遵循苹果的风格)。方法中通常包含一个关键字并且通过这个关键字来描述后面的参数。</p>
+
+<p>and关键字的使用还是避免使用，多个参数中他应该避免使用 而是使用如下<code>initWithWidth:height:</code></p>
+
+<p>优先：</p>
+
+<pre><code>- (void)setExampleText:(NSString *)text image:(UIImage *)image;
+- (void)sendAction:(SEL)aSelector to:(id)anObject forAllCells:(BOOL)flag;
+- (id)viewWithTag:(NSInteger)tag;
+- (instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height;
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>- (void)setT:(NSString *)text i:(UIImage *)image;
+- (void)sendAction:(SEL)aSelector :(id)anObject :(BOOL)flag;
+- (id)taggedView:(NSInteger)tag;
+- (instancetype)initWithWidth:(CGFloat)width andHeight:(CGFloat)height;
+- (instancetype)initWith:(int)width and:(int)height;  // Never do this.
+</code></pre>
+
+<h2>语法</h2>
+
+<p>当我们使用不可变实例对象时，<code>NSString</code>, <code>NSDictionary</code>, <code>NSArray</code>, and <code>NSNumber</code>应该要用到。注意：<code>nil</code>值不能传到<code>NSArray</code> 和 <code>NSDictionary</code> 因为会使得程序导致崩溃。</p>
+
+<p>例如：</p>
+
+<pre><code>NSArray *names = @[@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul"];
+NSDictionary *productManagers = @{@"iPhone" : @"Kate", @"iPad" : @"Kamal", @"Mobile Web" : @"Bill"};
+NSNumber *shouldUseLiterals = @YES;
+NSNumber *buildingZIPCode = @10018;
+</code></pre>
+
+<p>禁止：</p>
+
+<pre><code>NSArray *names = [NSArray arrayWithObjects:@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul", nil];
+NSDictionary *productManagers = [NSDictionary dictionaryWithObjectsAndKeys: @"Kate", @"iPhone", @"Kamal", @"iPad", @"Bill", @"Mobile Web", nil];
+NSNumber *shouldUseLiterals = [NSNumber numberWithBool:YES];
+NSNumber *buildingZIPCode = [NSNumber numberWithInteger:10018];
+</code></pre>
+
+<p>对于可变部分的这些类我们推荐，明确这些类的使用比如<code>NSMutableArray</code>, <code>NSMutableString</code></p>
+
+<p>以下使用方式应该避免：</p>
+
+<pre><code>NSMutableArray *aMutableArray = [@[] mutableCopy];
+</code></pre>
+
+<p>问题是先前的标记不仅有效而且具有可读性。
+在效率上，不必要的不可变对象创建并且马上又释放了，这样就不会降低你的app的性能(除非方法在这里频繁的被调用)，但是在这里根本没有理由来做些来保存一些。
+在可读性上，我们可以发现两个问题:首先，当我们浏览代码时，会把<code>@[]</code>与<code>NSArray</code>立马联系到一起，但是在这种情况下，你应该停止并且深入的检查。另一个就是，一些缺乏经验的人将会看到你的代码在他的角度上他无法区分可变和不可变对象，他对创建深拷贝并不熟悉(很明显我们并不是建议知识并不是必须的)，反过来，这并不是弯曲错误但是我们应该更多考虑到代码的可用性(包含代码的阅读性)</p>
+
+<h1>类</h1>
+
+<h2>类名</h2>
