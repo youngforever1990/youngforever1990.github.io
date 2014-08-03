@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-03T02:27:30+08:00</updated>
+  <updated>2014-08-04T01:53:03+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -409,7 +409,49 @@ NSNumber *buildingZIPCode = [NSNumber numberWithInteger:10018];
     <link href="http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class/"/>
     <updated>2014-08-03T02:06:18+08:00</updated>
     <id>http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class</id>
-    <content type="html"><![CDATA[
+    <content type="html"><![CDATA[<h1>类</h1>
+
+<h2>类名</h2>
+
+<p>你最好在类前面加入3个大写字母的作为类的前缀（苹果自带的是2个字母），这个看似奇怪的做法确是弥补了没有命名空间的缺憾，在模型对象中，一些开发者却并不遵循这个做法（尤其是core data 里的object），不过在Core Data objects 中，我们仍然建议严格遵循这个规范，因为你很有可能需要合并来自第三方库的Manage Object Model 。
+也许你早已注意到，这本书的类的前缀就是<code>ZOC</code></p>
+
+<p>在我们选择如何个类命名的时候，你可以试着这样做:
+当你创建一个子类的时候，你应该把详细名字放在类名的前缀和父类名之间。这里有一个很好的例子:</p>
+
+<p>如果你有一个类名叫做<code>ZOCNetworkClient</code>,子类名叫做<code>ZOCTwitterNetworkClient</code>可能会更好，（记住&#8221;Twitter&#8221;在&#8221;ZOC&#8221;和&#8221;NetworkClient&#8221;之间）;同样，遵照这个规则，<code>UIViewController</code>的子类叫做<code>ZOCTimelineViewController</code></p>
+
+<h2>初始化 和 释放</h2>
+
+<p>推荐的做法是 在类里面把<code>dealloc</code>方法放在实现方法里的最上面(放在<code>@synthesize</code> 和 <code>@dynamic</code>后面)同时把<code>init</code>方法放在<code>dealloc</code>方法后面。一旦有多个初始化方法时，你应该把自定义初始化方法作为第一个方法，因为这样做可能更具有逻辑性，次要的初始化方法则紧随其后。自从有了ARC之后，越来越没有必要实现delloc方法了，但是仍然很有必要把dealloc方法靠近在你的init方法中，你可以类比需要成对出现一样。通常在delloc方法中你是撤销一些你在init方法做过的事情。</p>
+
+<p><code>init</code> 方法应该是一下这种结构:</p>
+
+<pre><code>- (instancetype)init
+{
+    self = [super init]; // call the designated initializer
+    if (self) {
+    // Custom initialization
+    }
+    return self;
+}
+</code></pre>
+
+<p>对于为什么要给self 赋值 <code>[super init]</code>的返回值以及如果我们不这样做又会发生什么 是一件非常有意思的事情。</p>
+
+<p>我们习惯使用类似<code>[[NSObject alloc] init]</code>的表达式介于<code>alloc</code> and <code>init</code>正在减弱。Objective-C的特性之一就是叫做<code>两个阶段性的创建</code>,意思就是创建和初始化是两个完全独立的过程,因此这两个不同的方法都需要被调用。
+&ndash;<code>alloc</code>负责对象的创建.这个过程涉及到要在应用的虚拟内存中需要足够的内存来维持这个对象存在，写入了一个<code>isa</code>指针，初始化引用计数器，并且让所有的实例变量归零。
+&ndash;<code>init</code>负责对象的初始化，意味着需要让对象处于一种可用的状态。意思就是给实例变量设立一个对象并且给他一个有效的初始值。</p>
+
+<p><code>alloc</code>方法将会返回一个有效的未初始化的实例，每一个发送给实例的消息都会被翻译成参数名为<code>self</code>的<code>objc_msgSend()</code>方法的调用，并且作为<code>alloc</code>方法的返回值。在这种情况下,<code>self</code>在方法的有效方法内湿绝对有效地，从这两步我们可以得出:第一个发给新创建的实例的方法应该按照协议来说是<code>init</code>方法，值得注意的是，相比返回<code>self</code>，<code>NSObject</code>的中<code>init</code>的实现并没有做得更多</p>
+
+<p><code>init</code>方法中还有一个需要注意的是:作为一个信号，在初始化并不成功（返回<code>nil</code>）的情况下，初始化总会因为各种原因而导致失败，比如:传入值是一种错误的格式，或者是在成功初始化对象的传值失败，</p>
+
+<p>这就告诉我们为什么需要用<code>self = [super init]</code>,如果你的父类表明了她不能成功初始化他们自己，你必须要明白你处于一个不稳定的状态，因此你也没有必要继续初始化工作同时在方法实现中将会返回<code>nil</code>,如果你不这样做的话，对象将无法使用，最终将会导致你的app崩溃。</p>
+
+<p>为了返回一个不同的实例而不是他们曾经调用过的，在<code>init</code>方法中给<code>self</code>重新赋值还是很有必要的，在<a href="#class-cluster">Class cluster</a>或者某些返回同样实例（不可改变）对象的Cocoa类里有这些例子</p>
+
+<h3>指定的 和 次要的 初始化方法</h3>
 ]]></content>
   </entry>
   
