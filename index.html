@@ -9,10 +9,12 @@
   <meta name="author" content="Young">
 
   
-  <meta name="description" content="
-高效使用你的xcode
+  <meta name="description" content="8.4~8.10 高效使用你的xcode
 理解Objective-C Runtime
-Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器 ">
+Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器
+objc非主流代码技巧
+Swift中的文件和初始化
+how to use git properly &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -97,11 +99,17 @@ Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug�
   </header>
 
 
-  <div class="entry-content"><ul>
+  <div class="entry-content"><h4>8.4~8.10</h4>
+
+<ul>
 <li><a href="http://www.cocoachina.com/newbie/basic/2014/0731/9284.html">高效使用你的xcode</a></li>
 <li><a href="http://www.justinyan.me/post/1624">理解Objective-C Runtime</a></li>
 <li><a href="http://fauxpasapp.com">Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器</a></li>
-<li></li>
+<li><a href="http://blog.sunnyxx.com/2014/08/02/objc-weird-code/">objc非主流代码技巧</a></li>
+<li><a href="http://www.devtalking.com/articles/files-and-initialization/">Swift中的文件和初始化</a></li>
+<li><a href="http://stackoverflow.com/questions/2615378/how-to-use-git-properly-with-xcode">how to use git properly with xcode</a></li>
+<li><a href="http://onevcat.com/2014/08/notification-today-widget/">iOS 通知中心扩展制作入门</a></li>
+<li><a href="http://zhuanlan.zhihu.com/wooyun/19810488">逆向工程入门</a></li>
 </ul>
 
 </div>
@@ -600,6 +608,119 @@ NSNumber *buildingZIPCode = [NSNumber numberWithInteger:10018];
 <p>为了返回一个不同的实例而不是他们曾经调用过的，在<code>init</code>方法中给<code>self</code>重新赋值还是很有必要的，在<a href="#class-cluster">Class cluster</a>或者某些返回同样实例（不可改变）对象的Cocoa类里有这些例子</p>
 
 <h3>指定的 和 次要的 初始化方法</h3>
+
+<p>Objective-C中具有指定型和次要型两种初始化的概念。指定型初始化就是对初始化的参数完全实现。次要型初始化就是一个调用指定型初始化的方法并且会赋予一些默认的参数值。</p>
+
+<pre><code>@implementation ZOCEvent
+
+- (instancetype)initWithTitle:(NSString *)title
+                     date:(NSDate *)date
+                 location:(CLLocation *)location
+{
+    self = [super init];
+    if (self) {
+        _title    = title;
+        _date     = date;
+        _location = location;
+    }
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                     date:(NSDate *)date
+{
+    return [self initWithTitle:title date:date location:nil];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+{
+    return [self initWithTitle:title date:[NSDate date] location:nil];
+}
+
+@end
+</code></pre>
+
+<p>在上面的例子中，<code>initWithTitle:date:location:</code>是指定型的初始化，而另外两个就是次要型初始化，因为他们在实现的过程中调用了指定型初始化</p>
+
+<h4>指定型初始化</h4>
+
+<p>一个类有且只有一个指定型初始化方法，所有其他的初始化方法都调用指定型初始化方法(尽管在这个例子中是个例外).
+在这里并没有要求那个初始化方法必须要调用。从类的层级来说，无论哪个指定型初始化方法调用都是有效地，并且要保证在类的层级中从他的根类(<code>NSObject</code>)到你的类，所有的指定型初始化方法都被调用了.
+实际上是说，从他的祖类开始，第一个初始化代码就已经执行了，并且都执行到当前这个类里了；最终给了所有在这个架构里的类机会执行初始化工作.这就表明了:在你做实际工作之前你想要所有从你父类继承的东西是出于一个可用的状态，所有在苹果架构里的类都需要遵守这个规则并且你的类应该同样如此。</p>
+
+<p>当我们定义一个新的类时，这里有三种状态有可能会遇到:</p>
+
+<ol>
+<li>没有必要重载任何初始化方法</li>
+<li>重载了指定型初始化方法</li>
+<li>定义了一个新的初始化方法</li>
+</ol>
+
+
+<p>第一种情况最容易被忽视:我们根本没有必要添加任何具体的逻辑在类的初始化当中，你只要依靠父类的指定型初始化方法就行.
+当你想提供额外的初始化逻辑时你可以考虑重载指定型初始化。你只应该重载目前父类的指定型初始化方法并且确定你的实现方法里调用了你重载的父类方法。
+一个最典型的例子就是看你的<code>UIViewController</code>的子类是否重载了<code>initWithNibName:bundle:</code>:</p>
+
+<pre><code>- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    // call to the superclass designated initializer
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+</code></pre>
+
+<p>在<code>UIViewController</code>的子类中如果调用<code>init</code>方法将会是报错，因为调用者在初始化你的类时将会调用<code>initWithNib:bundle</code>这个方法，你自己写的init方法将不会调用。同时这个也和调用任何指定型初始化方法都是有效相矛盾。</p>
+
+<p>如果你想要使用你自己的指定型初始化方法你需要遵守以下三个步骤来确保是这个行为是否正确:</p>
+
+<ol>
+<li>声明你的指定型初始化方法，并且确保会调用当前父类的指定型初始化方法;</li>
+<li>重载父类的指定型初始化方法类并且在里面调用你自己的新的初始化方法;</li>
+<li>记录新的初始化方法;</li>
+</ol>
+
+
+<p>许多开发者都会忘记最后两部，这并不是仅仅很少关心问题，但是在第二步已经是很明显的反对框架的规则，并且会导致一些不确定的行为和bug，让我们来看看正确的实现方法:</p>
+
+<p>@implementation ZOCNewsViewController</p>
+
+<pre><code>- (id)initWithNews:(ZOCNews *)news
+{
+    // 调用父类的指定型初始化方法
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        _news = news;
+    }
+    return self;
+}
+
+// 重载父类的指定型初始化方法
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle     *)nibBundleOrNil
+{
+    // 调用新的指定型初始化方法
+    return [self initWithNews:nil];
+}
+</code></pre>
+
+<p>如果你没有重载<code>initWithNibName:bundle:</code>方法并且调用者决定用这个方法初始化（将是一个完美的选择）,那么<code>initWithNews:</code>将不会被调用同时会导致不正确的初始化次序，因为那个类的具体的初始化逻辑将不会被执行.</p>
+
+<p>尽管我们可以推断哪个方法是指定型初始化方法,但是明确点清晰点还是好的(未来你或者其他的要在你的代码基础上工作的人将会感谢你).这里有两种策略你可以考虑去使用:
+第一个就是在文档中明确表明那个方法是指定型初始化方法，但是最好 你要对你的编译器反倒满意并且你可以通过使用编译器官方的<code>__attribute__((objc_designated_initializer))</code>来标明你的意图
+通过这个直接做法同样也会使得编译器帮助你，同时如果在你的指定型初始化方法中你没有调用父类的指定型初始化方法，编译器则会报出一个警告</p>
+
+<p>因此，在没有调用类的指定型初始化方法中(反过来只提供了必要的参数)同时调用类的架构中其他的指定型方法将会使得类处于一种无用的状态.参考之前的例子,并没有并没有需要提供news参数<code>ZOCNewsViewController</code>的指针，在没有news参数的情况下，你可以通过让其他的指定型初始化方法无效来强制调用一个具体的指定型初始化方法。这样 如果你想调用这个方法，通过使用其他的编译器直属的<code>__attribute__((unavailable("Invoke the designated initializer")))</code>将会使得编译器弹出一个错误。</p>
+
+<p>以下是之前例子中的头文件的实现(记住宏的使用使得代码不会重复和不会冗长).</p>
+
+<pre><code>@interface ZOCNewsViewController : UIViewController
+
+- (instancetype)initWithNews:(ZOCNews *)news ZOC_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle   *)nibBundleOrNil ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
+- (instancetype)init ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
+</code></pre>
 </div>
   
   
