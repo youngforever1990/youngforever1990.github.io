@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-04T13:54:01+08:00</updated>
+  <updated>2014-08-04T15:14:09+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -20,6 +20,9 @@
     <id>http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection</id>
     <content type="html"><![CDATA[<ul>
 <li><a href="http://www.cocoachina.com/newbie/basic/2014/0731/9284.html">高效使用你的xcode</a></li>
+<li><a href="http://www.justinyan.me/post/1624">理解Objective-C Runtime</a></li>
+<li><a href="http://fauxpasapp.com">Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器</a></li>
+<li></li>
 </ul>
 
 ]]></content>
