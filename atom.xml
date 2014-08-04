@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-04T01:53:03+08:00</updated>
+  <updated>2014-08-04T13:54:01+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -12,6 +12,18 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS高质量实用性文章收录]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection/"/>
+    <updated>2014-08-04T13:49:48+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection</id>
+    <content type="html"><![CDATA[<ul>
+<li><a href="http://www.cocoachina.com/newbie/basic/2014/0731/9284.html">高效使用你的xcode</a></li>
+</ul>
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Objective-C 编程艺术:条件语句、命名]]></title>
