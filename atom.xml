@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-05T11:31:38+08:00</updated>
+  <updated>2014-08-05T23:57:56+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -18,7 +18,7 @@
     <link href="http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection/"/>
     <updated>2014-08-04T13:49:48+08:00</updated>
     <id>http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection</id>
-    <content type="html"><![CDATA[<h4>8.4~8.10</h4>
+    <content type="html"><![CDATA[<h2>8.4~8.10</h2>
 
 <ul>
 <li><a href="http://www.cocoachina.com/newbie/basic/2014/0731/9284.html">高效使用你的xcode</a></li>
@@ -650,6 +650,76 @@ NSNumber *buildingZIPCode = [NSNumber numberWithInteger:10018];
 <h4>类簇</h4>
 
 <p>苹果官方文档对类簇的描述是:</p>
+
+<p>关于一个对 公共抽象父类下的私有的，混合的子类进行分组的架构</p>
+
+<p>如果你对这个描述感到熟悉的话，那么你的直觉是正确的。类簇可以被认为是苹果对抽象工厂设计模式的隐喻。之所以提类簇这个概念很简单:
+在你初始化过程中你将会有一个抽象类，作为初始化方法的参数来适用于一个逻辑和实例化一个具体的子类
+public facing 类应该对它内部的子类很熟悉 因此能够返回一个最合适完成这个任务的私有子类。这个设计模式非常有用因为它让只认识与对象通讯的接口的调用者那里消除了初始化逻辑复杂性，并没有过多的关注实现部分。类簇在苹果的框架里广泛的使用。比如NSNumber，根据提供的不同的数据类型，会返回一个合适的子类。还有NSArray，返回一个具体的且最佳存储的子类。</p>
+
+<p>这个设计模式的魅力在于：调用者可以完全不了解具体的子类。事实上可以再没有泄露任何具体实现的情况下设计一个库来交换返回的类。只要调用者完全遵守建立在抽象类下的协议</p>
+
+<p>在我们的经验中，类簇的使用对移除许多条件型代码非常有用。一个典型的例子就是你在iPad和iOS拥有相同的UIViewController子类，但是行为的不同却取决于设备的不同。一个比较幼稚的实现方法就是在需要这个逻辑的方法里添加一些条件代码来检查这个设备。尽管最初条件逻辑应用的地方也许十分少，但是最后都会很自然低在多处使用她。一种更好的设计模式是通过创建一个抽象的和一般的ViewController来完成。为了应对所有的设备，它将会包含所有共享的逻辑和两种不同专属的子类。一般的viewcontroller将会检查当前设备并且根据设备的不同来返回最合适的子类。</p>
+
+<pre><code>@implementation ZOCKintsugiPhotoViewController
+
+- (id)initWithPhotos:(NSArray *)photos
+{
+    if ([self isMemberOfClass:ZOCKintsugiPhotoViewController.class]) {
+        self = nil;
+
+        if ([UIDevice isPad]) {
+            self = [[ZOCKintsugiPhotoViewController_iPad alloc]     initWithPhotos:photos];
+        }
+        else {
+            self = [[ZOCKintsugiPhotoViewController_iPhone alloc]   initWithPhotos:photos];
+        }
+        return self;
+    }
+    return [super initWithNibName:nil bundle:nil];
+}
+
+@end
+</code></pre>
+
+<p>上面的代码告诉我们如何创建一个类簇。首先 <code>[self isMemberOfClass:ZOCKintsugiPhotoViewController.class]</code> 语句是为了阻止重载子类当中的初始化方法的必要来避免陷入无线递归。如果之前的检查是true,<code>[[ZOCKintsugiPhotoViewController alloc] initWithPhotos:photos]</code>这个方法将会被调用,<code>self = nil</code>是为了移除那些即将被释放<code>ZOCKintsugiPhotoViewController</code>实例的引用。
+让我们假设我们正在iPhone上运行这些代码，<code>ZOCKintsugiPhotoViewController_iPhone</code>并没有重载<code>initWithPhotos:</code>方法。在这种情况下，当我们执行<code>self = [[ZOCKintsugiPhotoViewController_iPhone alloc] initWithPhotos:photos];</code>时，<code>ZOCKintsugiPhotoViewController</code>将会被调用，并且当第一次检查出现时，发现并不是<code>ZOCKintsugiPhotoViewController</code> 因此调用<code>return [super initWithNibName:nil bundle:nil];</code>肯定会失败。正如前面强调的的初始化需要遵守正确的初始化步骤</p>
+
+<h4>单例</h4>
+
+<p>大体上，尽可能的避免使用单例，而是使用独立注入。不过不可避免的单例对象应该使用线程安全模式来创建一个共享的实例。在GCD中。我们可能会使用到<code>dispatch_once()</code></p>
+
+<pre><code>+ (instancetype)sharedInstance
+{
+    static id sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&amp;onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+        return sharedInstance;
+}
+</code></pre>
+
+<p>dispatch_once()的使用 取代下面的老式的:</p>
+
+<pre><code>+ (instancetype)sharedInstance
+{
+    static id sharedInstance;
+    @synchronized(self) {
+        if (sharedInstance == nil) {
+            sharedInstance = [[MyClass alloc] init];
+        }
+    }
+    return sharedInstance;
+}
+</code></pre>
+
+<p><code>dispatch_once()</code>的好处就在于它更快，语义也更简洁明了，因为整个dispatch_once()的想法就是&#8221;执行某个东西一次并且只有一次&#8221;，并且非常精准的明白他们所做的。这种方式同样也会阻止[可能的某种的崩溃][单例singleton_cocoasamurai].
+比较经典的可以接受的单例对象就是GPS和设备加速器。尽管单例对象可以子类化，但是这种情况下是很少见的。这个接口将会证明所给的类是用来作为一个单例的。因此，一个公共的<code>sharedInstance</code>类的实例已经足够了并且没有可写的属性暴露出来。</p>
+
+<p>用力作为类的容器来来共享代码或者应用的层是非常丑陋的，它应该被翻译成设计的气息</p>
+
+<h2>Properties</h2>
 ]]></content>
   </entry>
   
