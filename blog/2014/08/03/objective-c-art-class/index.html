@@ -378,9 +378,9 @@ public facing 类应该对它内部的子类很熟悉 因此能够返回一个�
 <p><code>dispatch_once()</code>的好处就在于它更快，语义也更简洁明了，因为整个dispatch_once()的想法就是&#8221;执行某个东西一次并且只有一次&#8221;，并且非常精准的明白他们所做的。这种方式同样也会阻止[可能的某种的崩溃][单例singleton_cocoasamurai].
 比较经典的可以接受的单例对象就是GPS和设备加速器。尽管单例对象可以子类化，但是这种情况下是很少见的。这个接口将会证明所给的类是用来作为一个单例的。因此，一个公共的<code>sharedInstance</code>类的实例已经足够了并且没有可写的属性暴露出来。</p>
 
-<p>用力作为类的容器来来共享代码或者应用的层是非常丑陋的，它应该被翻译成设计的气息</p>
+<p>用单例作为类的容器来来共享代码或者应用的层是非常丑陋的，它应该被翻译成设计的气息</p>
 
-<h2>Properties</h2>
+<h2>属性</h2>
 </div>
 
 
@@ -436,6 +436,10 @@ public facing 类应该对它内部的子类很熟悉 因此能够返回一个�
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/06/ru-he-ti-gao-ios/">如何提高iOS</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2014/08/04/ios-high-quality-article-collection/">iOS高质量实用性文章收录</a>
