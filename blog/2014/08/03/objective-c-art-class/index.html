@@ -38,7 +38,7 @@
   <header role="banner"><hgroup>
   <h1><a href="/">黄杨的技术博客</a></h1>
   
-    <h2>持之以恒</h2>
+    <h2>持之以恒，喜欢就是复制，爱就是创造</h2>
   
 </hgroup>
 
@@ -247,6 +247,70 @@
 - (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle   *)nibBundleOrNil ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
 - (instancetype)init ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
 </code></pre>
+
+<p>从上面的描述我们可以得出一个结论：你不能在指定型初始化方法中调用次要型初始化方法(如果你遵守协议的话，次要型初始化方法将会调用指定型初始化方法),如果这样做的话，调用将会触发并且重载子类的初始化方法，最终导致无限的递归.</p>
+
+<p>但是对于这些规则，有一个是例外的，对象是否遵守<code>NSCoding</code>协议，并且它是通<code>initWithCoder:</code>来初始化的。</p>
+
+<p>我们要去区分对象的父类什么时候遵循<code>NSCoding</code>协议</p>
+
+<p>在之前的例子中，如果你只是调用<code>[super initWithCoder:]</code>，你将有可能在指定型初始化方法中共用一些初始化代码;然而把代码转移到私有方法中能够很好的处理这个问题(i.e.  <code>p_commonInit</code>)</p>
+
+<p>当你的父类并没有遵守<code>NSCoding</code>协议时，推荐的做法就是把<code>initWithCoder:</code>设为次要型初始化方法，并且调用<code>self</code>指定型初始化方法。但是你会发现这样做违背了苹果的建议<a href="https://developer.apple.com/library/mac/documentation/cocoa/Conceptual/Archiving/Articles/codingobjects.html#//apple_ref/doc/uid/20000948-BCIHBJDE">Archives and Serializations Programming Guide</a> :</p>
+
+<blockquote><p>对象首先会调用父类的指定型初始化方法来初始化继承后的状态</p></blockquote>
+
+<p>遵守这个话将会导致不确定的行为，如果你的类不是<code>NSObject</code>直属子类的话</p>
+
+<h4>次要型初始化</h4>
+
+<p>正如上面所说，次要型初始化方法就是一些列提供默认值或者行为给指定型初始化方法的方法。
+也就是说，在这些方法中，你分本不需要做任何的强制初始化工作并且，你也不用假装认定这些方法被调用了。我们唯一需要做的是保证指定型初始化方法被调用了.</p>
+
+<p>这就意味着在你的指定型初始化方法中你应该总是调用其他的次要型初始化方法或者你的 <code>self</code>指定型初始化方法,某些时候，因为失误，我们会输入成<code>self</code>，这样做的话就没有遵循初始化的步骤了</p>
+
+<h5>引用文档</h5>
+
+<ul>
+<li><a href="https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCreation.html">https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCreation.html</a></li>
+<li><a href="https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html">https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html</a></li>
+<li><a href="https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/MultipleInitializers.html">https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/MultipleInitializers.html</a></li>
+<li><a href="https://blog.twitter.com/2014/how-to-objective-c-initializer-patterns">https://blog.twitter.com/2014/how-to-objective-c-initializer-patterns</a></li>
+</ul>
+
+
+<h3>instancetype</h3>
+
+<p>我们我经常没有意识到Cocoa到处都是一些规则，因为他们可以使得编译器更加灵活。不管这个编译器是否用了<code>alloc</code> 或 <code>init</code>方法，他们都知道，尽管返回值是<code>id</code>，这些方法都会返回一个接收类型的类的实例。因此也会允许编译器提供并且强制类型检查(i.e 检查方法调用的返回实例是有效的).Clang聪明之处就在于一个叫做<a href="http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">相关结果类型</a>的东西,意思就是:</p>
+
+<blockquote><p>发送给alloc和init方法的消息将会有一个和接收类的实例静态类型</p></blockquote>
+
+<p>想了解更多的自动识别的相关结果类型，请参阅<a href="(http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">appropriate section</a>)Clang语言扩展指导</p>
+
+<p>相关结果类型清楚地表明了，通过使用<code>instancetype</code>关键字作为返回值类型，这对在工厂方法或者构造器的使用非常有益。这将会隐藏编译器正确的值隐藏，可能更重要的是，子类也会执行的更加正确;</p>
+
+<pre><code>@interface ZOCPerson
++ (instancetype)personWithName:(NSString *)name;
+@end
+</code></pre>
+
+<p>尽管如此，根据Clang编译器中的详细描述，<code>id</code>可以被编译器认为<code>instancetype</code>，在<code>alloc</code> or <code>init</code> 的情况下，我们强烈建议使用<code>instancetype</code>作为类的返回值，并且让实例方法返回一个类的实例.你在你自己的api里最好也沿用这个习惯,再一次通过微调你的代码来提高代码的可阅读性:一眼就可以看出那个方法是返回类的实例。很长一段时期你都会感谢你做的这些.</p>
+
+<h5>参考资料</h5>
+
+<ul>
+<li><a href="http://tewha.net/2013/02/why-you-should-use-instancetype-instead-of-id/">http://tewha.net/2013/02/why-you-should-use-instancetype-instead-of-id/</a></li>
+<li><a href="http://tewha.net/2013/01/when-is-id-promoted-to-instancetype/">http://tewha.net/2013/01/when-is-id-promoted-to-instancetype/</a></li>
+<li><a href="http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types</a></li>
+<li><a href="http://nshipster.com/instancetype/">http://nshipster.com/instancetype/</a></li>
+</ul>
+
+
+<h3>初始化模式</h3>
+
+<h4>类簇</h4>
+
+<p>苹果官方文档对类簇的描述是:</p>
 </div>
 
 
