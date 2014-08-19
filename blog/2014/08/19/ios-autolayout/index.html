@@ -5,16 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>iOS高质量实用性文章收录 - 黄杨的技术博客</title>
+  <title>iOS---AutoLayout - 黄杨的技术博客</title>
   <meta name="author" content="Young">
 
   
-  <meta name="description" content="8.4~8.10 高效使用你的xcode
-理解Objective-C Runtime
-Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器
-objc非主流代码技巧
-Swift中的文件和初始化
-how to use git properly &hellip;">
+  <meta name="description" content="iOS7 tutorial 自动布局学习笔记 1.UIViewController的UINavigationBarDelegate的这个方法，来选定navigationbar缩放的位置是否延伸上至状态栏; - (UIBarPosition)positionForBar:(id &lt; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -23,7 +18,7 @@ how to use git properly &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection">
+  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="黄杨的技术博客" type="application/atom+xml">
@@ -73,7 +68,7 @@ how to use git properly &hellip;">
   
   <header>
     
-      <h1 class="entry-title">iOS高质量实用性文章收录</h1>
+      <h1 class="entry-title">iOS---AutoLayout</h1>
     
     
       <p class="meta">
@@ -89,47 +84,73 @@ how to use git properly &hellip;">
   
 
 
-<time datetime="2014-08-04T13:49:48+08:00" pubdate data-updated="true">Aug 4<sup>th</sup>, 2014</time>
+<time datetime="2014-08-19T18:33:04+08:00" pubdate data-updated="true">Aug 19<sup>th</sup>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>8.4~8.10</h2>
+<div class="entry-content"><h2>iOS7 tutorial 自动布局学习笔记</h2>
+
+<p>1.UIViewController的UINavigationBarDelegate的这个方法，来选定navigationbar缩放的位置是否延伸上至状态栏;</p>
+
+<pre><code>- (UIBarPosition)positionForBar:(id &lt;UIBarPositioning&gt;)bar
+ {      return UIBarPositionTopAttached;      }
+</code></pre>
+
+<p>2.自动布局</p>
+
+<pre><code>即： 不需要在设置view.frame,只需要设置constraint即可；
+</code></pre>
 
 <ul>
-<li><a href="http://www.cocoachina.com/newbie/basic/2014/0731/9284.html">高效使用你的xcode</a></li>
-<li><a href="http://www.justinyan.me/post/1624">理解Objective-C Runtime</a></li>
-<li><a href="http://fauxpasapp.com">Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器</a></li>
-<li><a href="http://blog.sunnyxx.com/2014/08/02/objc-weird-code/">objc非主流代码技巧</a></li>
-<li><a href="http://www.devtalking.com/articles/files-and-initialization/">Swift中的文件和初始化</a></li>
-<li><a href="http://stackoverflow.com/questions/2615378/how-to-use-git-properly-with-xcode">how to use git properly with xcode</a></li>
-<li><a href="http://onevcat.com/2014/08/notification-today-widget/">iOS 通知中心扩展制作入门</a></li>
-<li><a href="http://zhuanlan.zhihu.com/wooyun/19810488">逆向工程入门</a></li>
+<li><p>什么是约束？</p>
+
+<p>  约束通常是两个view之间额关系，通常是view 和 它的父view；你必须要记住一点就是：必须要有足够的Constraint以保证position和size可以计算的出来;</p></li>
 </ul>
 
 
-<h2>8.11~8.17</h2>
+<p>练习使用:</p>
 
-<ul>
-<li><a href="http://blog.csdn.net/colorapp/article/details/38422073#0-tsina-1-61933-397232819ff9a47a7b7e80a40613cfe1"> iOS AutoLayout学习总结</a></li>
-<li><a href="http://docs.polymerchina.org/docs/start/tutorial/intro.html">Polymer 最佳入门指南</a></li>
-<li><a href="http://blog.csdn.net/lizhongfu2013/article/details/12648633">IOS7开发～Xcode5制作framework</a></li>
-<li><a href="http://wangzz.github.io/blog/2014/08/08/ping-mu-xuan-zhuan-xue-xi-bi-ji/">iOS屏幕旋转学习笔记</a></li>
-<li><a href="http://wangzz.github.io/blog/2014/06/12/wwdc2014zhi-iosshi-yong-dong-tai-ku/">WWDC2014之iOS使用动态库</a></li>
-<li><a href="https://github.com/jakubroztocil/httpie">一个甩curl几条街的命令行http客户端</a></li>
-<li><a href="http://www.imooc.com/learn/149">Swift开发视频</a>     <a href="https://github.com/JakeLin/SwiftWeather">Weather-app源码</a></li>
-<li><a href="https://github.com/ShinobiControls/iOS8-day-by-day">一个不错的iOS8 学习repo . iOS8 Day by Day. Day Day Up,You know</a></li>
-</ul>
+<pre><code>1.在 file inspector 里面打开 UseAutolayout
 
+2.Remember that with Auto Layout you may no longer set the frame of a view directly.
 
-<h2>其他</h2>
+3.点击Pin,点击四周使之成为红色;
+4.如果你在view上添加constraint，ib会自动添加一个固定的position和size
+</code></pre>
 
-<ul>
-<li></li>
-</ul>
+<p>添加Constraint 有两种方法:</p>
 
+<pre><code>1.点击view ，添加pin 
+2.点击view ，按住ctrl，连接相邻的view
+
+3.包含：Leading Space 、 Trailling Space 、 Bottom Space
+4.在使用 toolbar 和navigationbar的时候，选中 他们，然后按住ctrl 连接top Layout guide和bottom Layout guide 。。即可
+</code></pre>
+
+<p>3.所有的controller都有一个Adjust Scroll View Insets 属性来使得scrollview或者tableview的内容不会被任何bar所遮挡,不过这只对那些viewcontroller的主view是tableview的或者scrollview有效;
+因此有时候你需要手动调整content inset来适配;</p>
+
+<p>4.align 可以选择为多个控件的左右对齐，</p>
+
+<p>5.某种控件，类似label和button，都是根据内容来确定它自身的大小的，label知道了自身text有多少和font有多大，就知道autolayout需要有多大，这就是instrinsic content size，在ib中你根本不需要给他们精确的size</p>
+
+<pre><code>[cell.contentView systemLayoutSizeFittingSize:      UILayoutFittingCompressedSize].height + 1.0f    
+</code></pre>
+
+<p>6.如果你的view里面有多个instrinsic content view ，比如button，label 或者imageview
+注意</p>
+
+<pre><code>content hugging priority：阻止变大的力度
+content compression resistance priority：阻止变小的力度
+</code></pre>
+
+<p>7.主动让其view下移一段距离：</p>
+
+<pre><code>self.tableview.contentInset = UIEdgeInsets(64,0,44,0)
+</code></pre>
 </div>
 
 
@@ -152,7 +173,7 @@ how to use git properly &hellip;">
   
 
 
-<time datetime="2014-08-04T13:49:48+08:00" pubdate data-updated="true">Aug 4<sup>th</sup>, 2014</time>
+<time datetime="2014-08-19T18:33:04+08:00" pubdate data-updated="true">Aug 19<sup>th</sup>, 2014</time>
       
 
 
@@ -160,7 +181,7 @@ how to use git properly &hellip;">
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout/" >Tweet</a>
   
   
   
@@ -169,10 +190,8 @@ how to use git properly &hellip;">
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/03/objective-c-art-conditional-statement-name-and-so-on/" title="Previous Post: Objective-C 编程艺术:条件语句、命名">&laquo; Objective-C 编程艺术:条件语句、命名</a>
+        <a class="basic-alignment left" href="/blog/2014/08/18/pythonbi-ji/" title="Previous Post: Python笔记">&laquo; Python笔记</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/08/06/ru-he-ti-gao-ios/" title="Next Post: 如何提高iOS">如何提高iOS &raquo;</a>
       
     </p>
   </footer>

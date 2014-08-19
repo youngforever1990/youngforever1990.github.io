@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-18T20:36:46+08:00</updated>
+  <updated>2014-08-19T18:33:47+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -12,6 +12,74 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS---AutoLayout]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout/"/>
+    <updated>2014-08-19T18:33:04+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout</id>
+    <content type="html"><![CDATA[<h2>iOS7 tutorial 自动布局学习笔记</h2>
+
+<p>1.UIViewController的UINavigationBarDelegate的这个方法，来选定navigationbar缩放的位置是否延伸上至状态栏;</p>
+
+<pre><code>- (UIBarPosition)positionForBar:(id &lt;UIBarPositioning&gt;)bar
+ {      return UIBarPositionTopAttached;      }
+</code></pre>
+
+<p>2.自动布局</p>
+
+<pre><code>即： 不需要在设置view.frame,只需要设置constraint即可；
+</code></pre>
+
+<ul>
+<li><p>什么是约束？</p>
+
+<p>  约束通常是两个view之间额关系，通常是view 和 它的父view；你必须要记住一点就是：必须要有足够的Constraint以保证position和size可以计算的出来;</p></li>
+</ul>
+
+
+<p>练习使用:</p>
+
+<pre><code>1.在 file inspector 里面打开 UseAutolayout
+
+2.Remember that with Auto Layout you may no longer set the frame of a view directly.
+
+3.点击Pin,点击四周使之成为红色;
+4.如果你在view上添加constraint，ib会自动添加一个固定的position和size
+</code></pre>
+
+<p>添加Constraint 有两种方法:</p>
+
+<pre><code>1.点击view ，添加pin 
+2.点击view ，按住ctrl，连接相邻的view
+
+3.包含：Leading Space 、 Trailling Space 、 Bottom Space
+4.在使用 toolbar 和navigationbar的时候，选中 他们，然后按住ctrl 连接top Layout guide和bottom Layout guide 。。即可
+</code></pre>
+
+<p>3.所有的controller都有一个Adjust Scroll View Insets 属性来使得scrollview或者tableview的内容不会被任何bar所遮挡,不过这只对那些viewcontroller的主view是tableview的或者scrollview有效;
+因此有时候你需要手动调整content inset来适配;</p>
+
+<p>4.align 可以选择为多个控件的左右对齐，</p>
+
+<p>5.某种控件，类似label和button，都是根据内容来确定它自身的大小的，label知道了自身text有多少和font有多大，就知道autolayout需要有多大，这就是instrinsic content size，在ib中你根本不需要给他们精确的size</p>
+
+<pre><code>[cell.contentView systemLayoutSizeFittingSize:      UILayoutFittingCompressedSize].height + 1.0f    
+</code></pre>
+
+<p>6.如果你的view里面有多个instrinsic content view ，比如button，label 或者imageview
+注意</p>
+
+<pre><code>content hugging priority：阻止变大的力度
+content compression resistance priority：阻止变小的力度
+</code></pre>
+
+<p>7.主动让其view下移一段距离：</p>
+
+<pre><code>self.tableview.contentInset = UIEdgeInsets(64,0,44,0)
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Python笔记]]></title>
