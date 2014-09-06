@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>iOS---AutoLayout - 黄杨的技术博客</title>
+  <title>iOS-block - 黄杨的技术博客</title>
   <meta name="author" content="Young">
 
   
-  <meta name="description" content="iOS7 tutorial 自动布局学习笔记 1.UIViewController的UINavigationBarDelegate的这个方法，来选定navigationbar缩放的位置是否延伸上至状态栏; - (UIBarPosition)positionForBar:(id &lt; &hellip;">
+  <meta name="description" content="关于对block的理解 block出来了那么久了，但是一直都是局限于苹果api核第三方库的使用，但是自己还是不知道在实际的项目中如何使用它，今天好好整整，做做笔记? block 结构 左边的结构： int(^BlockName)(int argc) 函数调用 右边的机构: ^(int argc &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout">
+  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/09/06/ios-block">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="黄杨的技术博客" type="application/atom+xml">
@@ -68,7 +68,7 @@
   
   <header>
     
-      <h1 class="entry-title">iOS---AutoLayout</h1>
+      <h1 class="entry-title">iOS-block</h1>
     
     
       <p class="meta">
@@ -84,72 +84,108 @@
   
 
 
-<time datetime="2014-08-19T18:33:04+08:00" pubdate data-updated="true">Aug 19<sup>th</sup>, 2014</time>
+<time datetime="2014-09-06T09:06:42+08:00" pubdate data-updated="true">Sep 6<sup>th</sup>, 2014</time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><h2>iOS7 tutorial 自动布局学习笔记</h2>
+<div class="entry-content"><h2>关于对block的理解</h2>
 
-<p>1.UIViewController的UINavigationBarDelegate的这个方法，来选定navigationbar缩放的位置是否延伸上至状态栏;</p>
+<p>block出来了那么久了，但是一直都是局限于苹果api核第三方库的使用，但是自己还是不知道在实际的项目中如何使用它，今天好好整整，做做笔记?</p>
 
-<pre><code>- (UIBarPosition)positionForBar:(id &lt;UIBarPositioning&gt;)bar
- {      return UIBarPositionTopAttached;      }
+<h3>block 结构</h3>
+
+<p>左边的结构：</p>
+
+<pre><code>int(^BlockName)(int argc) 函数调用
 </code></pre>
 
-<p>2.自动布局</p>
+<p>右边的机构:</p>
 
-<pre><code>即： 不需要在设置view.frame,只需要设置constraint即可；
+<pre><code>^(int argc){
+
+}
+
+^ 的标记就是说明他就是block
+
+此处如果不用__block的话，会报到
+     __block int sum = 0;
+
+__block使用说明是block variable，那么在block里面可以任意修改此变量的值
+
+int (^myblocks2)(int a ,int b) =  ^(int a,int b){
+    sum = a + b;
+    return  sum;
+
+};
+
+block也是一种类型，类似int而已
 </code></pre>
+
+<h3>block的实际用法</h3>
 
 <ul>
-<li><p>什么是约束？</p>
+<li><p>接网络请求的block自己再次封装的方法，把block作为方法的参数</p>
 
-<p>  约束通常是两个view之间额关系，通常是view 和 它的父view；你必须要记住一点就是：必须要有足够的Constraint以保证position和size可以计算的出来;</p></li>
+<pre><code>  + (ASIHTTPRequest *)asyncGetRequest:(NSString *)url complete:(void (^)      (NSString *responseStr))complete failed:(void (^)(NSString      *errorMsg))failed;
+
+block可以用作一个方法参数使用，能更方便的取得回调数据
+
+block作为参数时使用格式是：需要把类型写在变量前面，然后加上小括号
+
+  -(void)objcMethod:(int(^)(int)square)
+</code></pre></li>
+<li><p>作为类的属性来使用</p>
+
+<pre><code>  if (completionHandler) {
+  completionHandler(self, barkCount);
+
+          }
+      }
+
+  @end
+
+  实现block 
+
+  FirstViewController *viewController = [[FirstViewController
+   alloc]initWithNibName:@"FirstViewController" bundle:nil];
+  BarkCallback myab = ^(FirstViewController *thisDog, int count) {
+  NSLog(@"count == %d", count);
+  };
+
+  viewController.completionHandler = myab;
+</code></pre></li>
+<li><p>block 作为全局变量来使用</p></li>
+<li>把block方法的参数来使用</li>
 </ul>
 
 
-<p>练习使用:</p>
+<p> block在调用时会在主体上copy一份值如下:</p>
 
-<pre><code>1.在 file inspector 里面打开 UseAutolayout
+<pre><code> {  
+int outA = 8;  
+int (^myPtr)(int) = ^(int a){ return outA + a;}; //block里面可以读取同一类型的   outA的值  
 
-2.Remember that with Auto Layout you may no longer set the frame of a view directly.
-
-3.点击Pin,点击四周使之成为红色;
-4.如果你在view上添加constraint，ib会自动添加一个固定的position和size
+outA = 5;  //在调用myPtr之前改变outA的值  
+int result = myPtr(3);  // result的值仍然是11，并不是8  
+NSLog(@"result=%d", result);  
 </code></pre>
 
-<p>添加Constraint 有两种方法:</p>
+<p>}</p>
 
-<pre><code>1.点击view ，添加pin 
-2.点击view ，按住ctrl，连接相邻的view
+<p>如果copy的是指针的话，它的值也可以在里面改变；</p>
 
-3.包含：Leading Space 、 Trailling Space 、 Bottom Space
-4.在使用 toolbar 和navigationbar的时候，选中 他们，然后按住ctrl 连接top Layout guide和bottom Layout guide 。。即可
-</code></pre>
+<p>Apple推荐block所使用的地方:</p>
 
-<p>3.所有的controller都有一个Adjust Scroll View Insets 属性来使得scrollview或者tableview的内容不会被任何bar所遮挡,不过这只对那些viewcontroller的主view是tableview的或者scrollview有效;
-因此有时候你需要手动调整content inset来适配;</p>
-
-<p>4.align 可以选择为多个控件的左右对齐，</p>
-
-<p>5.某种控件，类似label和button，都是根据内容来确定它自身的大小的，label知道了自身text有多少和font有多大，就知道autolayout需要有多大，这就是instrinsic content size，在ib中你根本不需要给他们精确的size</p>
-
-<pre><code>[cell.contentView systemLayoutSizeFittingSize:      UILayoutFittingCompressedSize].height + 1.0f    
-</code></pre>
-
-<p>6.如果你的view里面有多个instrinsic content view ，比如button，label 或者imageview
-注意</p>
-
-<pre><code>content hugging priority：阻止变大的力度
-content compression resistance priority：阻止变小的力度
-</code></pre>
-
-<p>7.主动让其view下移一段距离：</p>
-
-<pre><code>self.tableview.contentInset = UIEdgeInsets(64,0,44,0)
+<pre><code>枚举——通过block获取枚举对象或控制枚举进程
+View动画——简单明了的方式规定动画
+排序——在block内写排序算法
+通知——当某事件发生后执行block内的代码
+错误处理——当错误发生时执行block代码
+完成处理——当方法执行完毕后执行block代码 类似回调
+GCD多线程——多线程控制，关于这个以后有机会再写
 </code></pre>
 </div>
 
@@ -173,7 +209,7 @@ content compression resistance priority：阻止变小的力度
   
 
 
-<time datetime="2014-08-19T18:33:04+08:00" pubdate data-updated="true">Aug 19<sup>th</sup>, 2014</time>
+<time datetime="2014-09-06T09:06:42+08:00" pubdate data-updated="true">Sep 6<sup>th</sup>, 2014</time>
       
 
 
@@ -181,7 +217,7 @@ content compression resistance priority：阻止变小的力度
     
       <div class="sharing">
   
-  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/09/06/ios-block/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/09/06/ios-block/" >Tweet</a>
   
   
   
@@ -190,10 +226,8 @@ content compression resistance priority：阻止变小的力度
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2014/08/18/pythonbi-ji/" title="Previous Post: Python笔记">&laquo; Python笔记</a>
+        <a class="basic-alignment left" href="/blog/2014/08/19/ios-autolayout/" title="Previous Post: iOS---AutoLayout">&laquo; iOS---AutoLayout</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2014/09/06/ios-block/" title="Next Post: iOS-block">iOS-block &raquo;</a>
       
     </p>
   </footer>

@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-08-19T18:33:47+08:00</updated>
+  <updated>2014-09-06T09:07:16+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -12,6 +12,110 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[iOS-block]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/09/06/ios-block/"/>
+    <updated>2014-09-06T09:06:42+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/09/06/ios-block</id>
+    <content type="html"><![CDATA[<h2>关于对block的理解</h2>
+
+<p>block出来了那么久了，但是一直都是局限于苹果api核第三方库的使用，但是自己还是不知道在实际的项目中如何使用它，今天好好整整，做做笔记?</p>
+
+<h3>block 结构</h3>
+
+<p>左边的结构：</p>
+
+<pre><code>int(^BlockName)(int argc) 函数调用
+</code></pre>
+
+<p>右边的机构:</p>
+
+<pre><code>^(int argc){
+
+}
+
+^ 的标记就是说明他就是block
+
+此处如果不用__block的话，会报到
+     __block int sum = 0;
+
+__block使用说明是block variable，那么在block里面可以任意修改此变量的值
+
+int (^myblocks2)(int a ,int b) =  ^(int a,int b){
+    sum = a + b;
+    return  sum;
+
+};
+
+block也是一种类型，类似int而已
+</code></pre>
+
+<h3>block的实际用法</h3>
+
+<ul>
+<li><p>接网络请求的block自己再次封装的方法，把block作为方法的参数</p>
+
+<pre><code>  + (ASIHTTPRequest *)asyncGetRequest:(NSString *)url complete:(void (^)      (NSString *responseStr))complete failed:(void (^)(NSString      *errorMsg))failed;
+
+block可以用作一个方法参数使用，能更方便的取得回调数据
+
+block作为参数时使用格式是：需要把类型写在变量前面，然后加上小括号
+
+  -(void)objcMethod:(int(^)(int)square)
+</code></pre></li>
+<li><p>作为类的属性来使用</p>
+
+<pre><code>  if (completionHandler) {
+  completionHandler(self, barkCount);
+
+          }
+      }
+
+  @end
+
+  实现block 
+
+  FirstViewController *viewController = [[FirstViewController
+   alloc]initWithNibName:@"FirstViewController" bundle:nil];
+  BarkCallback myab = ^(FirstViewController *thisDog, int count) {
+  NSLog(@"count == %d", count);
+  };
+
+  viewController.completionHandler = myab;
+</code></pre></li>
+<li><p>block 作为全局变量来使用</p></li>
+<li>把block方法的参数来使用</li>
+</ul>
+
+
+<p> block在调用时会在主体上copy一份值如下:</p>
+
+<pre><code> {  
+int outA = 8;  
+int (^myPtr)(int) = ^(int a){ return outA + a;}; //block里面可以读取同一类型的   outA的值  
+
+outA = 5;  //在调用myPtr之前改变outA的值  
+int result = myPtr(3);  // result的值仍然是11，并不是8  
+NSLog(@"result=%d", result);  
+</code></pre>
+
+<p>}</p>
+
+<p>如果copy的是指针的话，它的值也可以在里面改变；</p>
+
+<p>Apple推荐block所使用的地方:</p>
+
+<pre><code>枚举——通过block获取枚举对象或控制枚举进程
+View动画——简单明了的方式规定动画
+排序——在block内写排序算法
+通知——当某事件发生后执行block内的代码
+错误处理——当错误发生时执行block代码
+完成处理——当方法执行完毕后执行block代码 类似回调
+GCD多线程——多线程控制，关于这个以后有机会再写
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS---AutoLayout]]></title>
@@ -353,10 +457,26 @@ base64.urlsafe_b64decode(&lsquo;&rsquo;)</p>
 </ul>
 
 
-<h2>其他</h2>
+<h2>8.18~8.24</h2>
 
 <ul>
-<li></li>
+<li><a href="http://anandology.com/python-practice-book/index.html">Python实战</a></li>
+</ul>
+
+
+<h2>9.5~</h2>
+
+<ul>
+<li><a href="http://www.quora.com/What-are-the-top-10-websites-computer-science-students-must-visit">What are the top 10 websites computer science students must visit?</a></li>
+<li><a href="http://code.csdn.net/news/2821086">速来膜拜！20位活跃在Github上的国内技术大牛</a></li>
+<li><a href="http://www.iwangke.me/2014/09/04/fuck-your-ios-teamates/">iOS应用开发之十大坑队友</a></li>
+</ul>
+
+
+<h2>iOS 插件</h2>
+
+<ul>
+<li>(字符串转义插件)[<a href="https://github.com/holtwick/HOStringSense-for-Xcode">https://github.com/holtwick/HOStringSense-for-Xcode</a>]</li>
 </ul>
 
 ]]></content>
