@@ -514,6 +514,139 @@ Class clz =NSClassFromString(@”MyClass”);
 通过@selector关键字可以在一定程度上实现方法的动态调用。更动态的方式是通过Fundation框架的NSSelectorFromString 函数，可以直接从字符串获取一个选择器：
 </code></pre>
 
+<p>断点续传实现流程：</p>
+
+<pre><code>首次传输其流程如下
+
+1.服务端向客户端传递文件名称和文件长度
+2.跟据文件长度计算文件块数(文件分块传输请参照第二篇文章)
+3.客户端将传输的块数写入临时文件(做为断点值)
+4.若文件传输成功则删除临时文件
+
+首次传输失败后将按以下流程进行
+1.客户端从临时文件读取断点值并发送给服务端
+2.服务端与客户端将文件指针移至断点处
+3.从断点处传输文件
+</code></pre>
+
+<p>Http状态码：</p>
+
+<pre><code>200 - 服务器成功返回网页
+404 - 请求的网页不存在
+503 - 服务不可用
+
+400   （错误请求） 服务器不理解请求的语法。
+401   （未授权） 请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。
+403   （禁止） 服务器拒绝请求。
+
+500   （服务器内部错误）  服务器遇到错误，无法完成请求。
+
+408   （请求超时）  服务器等候请求时发生超时。
+
+301   （永久移动）  请求的网页已永久移动到新位置。 服务器返回此响应（对 GET 或 HEAD 请求的响应）时，会自动将请求者转到新位置。
+</code></pre>
+
+<p>加载顺序：</p>
+
+<pre><code>init、viewDidLoad、viewWillAppear、viewDidAppear、viewWillDisappear、  viewDidDisappear
+
+推送：APNS apple 推送服务器：
+
+第 一阶段：BeejiveIM服务器把要发送的消息、目的iPhone的标识打包，发给APNS。 
+第二阶段：APNS在自身的已注册Push服务 的iPhone列表中，查找有相应标识的iPhone，并把消息   发到iPhone。 
+第三阶段：iPhone把发来的消息传递给相应的应用程序， 并且按照设定弹出Push通知。 
+Push认证
+
+建立tls连接生成device token，然后返回给iphone，给app把device token 给服务器，服务器把消息 和device token 传给 apns，apns根据devicetoken 判断和那台iphone 建立连接，然后推送到各个iphone手机应用的push栏目里。
+</code></pre>
+
+<p>对象序列化：</p>
+
+<pre><code>我们定义的对象类，必须实现NSCoding和NSCopying协议 
+
+//读取归档文件  
+ NSData *data = [[NSMutableDataalloc] initWithContentsOfFile:myFile];  
+ NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiveralloc]  initForReadingWithData:data];  
+TestObj * test = [unarchiver decodeObjectForKey:@"data"];  
+[unarchiver finishDecoding];  
+[data release];  
+[unarchiver release];  
+
+//写入归档文件  
+NSMutableData *data1 = [[NSMutableDataalloc] init];  
+</code></pre>
+
+<p>   NSKeyedArchiver *archiver = [[NSKeyedArchiveralloc]  initForWritingWithMutableData:data1];</p>
+
+<pre><code>[archiver encodeObject:test forKey:@"data"];  
+[archiver finishEncoding];  
+[data writeToFile:myFile atomically:YES];  
+[data1 release];  
+[archiver release];  
+[test release];  
+</code></pre>
+
+<p>xml 和 json 的优缺点：</p>
+
+<pre><code>优点：
+
+（1）格式统一，符合标准；
+
+（2）容易与其他系统进行远程交互，数据传输比较方便。
+
+缺点：
+
+（1）XML文件庞大，文件格式复杂，传输占带宽；
+
+（2）服务器端和客户端都需要花费大量代码来解析XML，导致服务器端和客户端代码变得异常复杂且  不易维护；
+
+（3）客户端不同浏览器之间解析XML的方式不一致，需要重复编写很多代码；
+
+（4）服务器端和客户端解析XML花费较多的资源和时间。
+
+（2）【JSON】的优缺点
+
+优点：
+
+（1）数据格式比较简单，易于读写，格式都是压缩的，占用带宽小；
+
+（2）易于解析，客户端JavaScript可以简单的通过eval_r()进行JSON数据的读取；
+
+（3）支持多种语言，包括ActionScript, C, C#, ColdFusion, Java, JavaScript, Perl, PHP, Python, Ruby等服务器端语言，便于服务器端的解析；
+
+（4）在PHP世界，已经有PHP-JSON和JSON-PHP出现了，偏于PHP序列化后的程序直接调用，PHP服   务器端的对象、数组等能直接生成JSON格式，便于客户端的访问提取；
+
+（5）因为JSON格式能直接为服务器端代码使用，大大简化了服务器端和客户端的代码开发量，且完成 任务不变，并且易于维护。
+
+缺点：
+
+（1）没有XML格式这么推广的深入人心和喜用广泛，没有XML那么通用性；
+
+（2）JSON格式目前在Web Service中推广还属于初级阶段
+
+（3）【XML】和【JSON】的优缺点对比：
+
+（1）在可读性方面，JSON和XML的数据可读性基本相同。JSON和XML的可读性可谓不相上下，一边是建议的语法，一边是规范的标签形式，很难分出胜负。
+
+（2）在可扩展性方面，XML天生有很好的扩展性，JSON当然也有，没有什么是XML能扩展，JSON不能的。
+
+（3）在编码难度方面，XML有丰富的编码工具，比如Dom4j、JDom等，JSON也有json.org提供的工具，但是JSON的编码明显比XML容易许多，即使不借助工具也能写出JSON的代码，可是要写好XML就不太容易了。
+
+（4）在解码难度方面，XML的解析得考虑子节点父节点，让人头昏眼花，而JSON的解析难度几乎为0。这一点XML输的真是没话说。
+
+（5）在流行度方面，XML已经被业界广泛的使用，而JSON才刚刚开始，但是在Ajax这个特定的领域，未来的发展一定是XML让位于JSON。到时Ajax应该变成Ajaj(Asynchronous Javascript and JSON)了。
+
+（6） JSON和XML同样拥有丰富的解析手段。
+
+（7）JSON相对于XML来讲，数据的体积小。
+
+（8）JSON与JavaScript的交互更加方便。
+
+（9）JSON对数据的描述性比XML较差。
+
+（10）JSON的速度要远远快于XML。
+</code></pre>
+
 <h2>项目篇</h2>
 
 <p>1.讲讲你在大智慧做的事哪些工作？K线图是如何绘制的？</p>
