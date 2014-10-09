@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/09/06/ios-interview-note/</loc>
+    <lastmod>2014-09-06T09:38:42+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/09/06/ios-block/</loc>
+    <lastmod>2014-09-06T09:06:42+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/19/ios-autolayout/</loc>
+    <lastmod>2014-08-19T18:33:04+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/18/pythonbi-ji/</loc>
+    <lastmod>2014-08-18T20:35:42+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/06/ru-he-ti-gao-ios/</loc>
+    <lastmod>2014-08-06T00:15:27+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/04/ios-high-quality-article-collection/</loc>
+    <lastmod>2014-08-04T13:49:48+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-conditional-statement-name-and-so-on/</loc>
+    <lastmod>2014-08-03T02:20:10+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class/</loc>
+    <lastmod>2014-08-03T02:06:18+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/08/01/php-beginner/</loc>
+    <lastmod>2014-08-01T00:00:00+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/archives/</loc>
+    <lastmod>2014-09-16T08:52:33+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/</loc>
+    <lastmod>2014-09-16T08:52:33+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  
+</urlset>

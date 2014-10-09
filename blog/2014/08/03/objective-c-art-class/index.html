@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Objective-C 编程艺术: 类 - 黄杨的技术博客</title>
+  <meta name="author" content="Young">
+
+  
+  <meta name="description" content="类 类名 你最好在类前面加入3个大写字母的作为类的前缀（苹果自带的是2个字母），这个看似奇怪的做法确是弥补了没有命名空间的缺憾，在模型对象中，一些开发者却并不遵循这个做法（尤其是core data 里的object），不过在Core Data objects 中，我们仍然建议严格遵循这个规范， &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="黄杨的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">黄杨的技术博客</a></h1>
+  
+    <h2>持之以恒，喜欢就是复制，爱就是创造</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:youngforever1990.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Objective-C 编程艺术: 类</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T02:06:18+08:00" pubdate data-updated="true">Aug 3<sup>rd</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><h1>类</h1>
+
+<h2>类名</h2>
+
+<p>你最好在类前面加入3个大写字母的作为类的前缀（苹果自带的是2个字母），这个看似奇怪的做法确是弥补了没有命名空间的缺憾，在模型对象中，一些开发者却并不遵循这个做法（尤其是core data 里的object），不过在Core Data objects 中，我们仍然建议严格遵循这个规范，因为你很有可能需要合并来自第三方库的Manage Object Model 。
+也许你早已注意到，这本书的类的前缀就是<code>ZOC</code></p>
+
+<p>在我们选择如何个类命名的时候，你可以试着这样做:
+当你创建一个子类的时候，你应该把详细名字放在类名的前缀和父类名之间。这里有一个很好的例子:</p>
+
+<p>如果你有一个类名叫做<code>ZOCNetworkClient</code>,子类名叫做<code>ZOCTwitterNetworkClient</code>可能会更好，（记住&#8221;Twitter&#8221;在&#8221;ZOC&#8221;和&#8221;NetworkClient&#8221;之间）;同样，遵照这个规则，<code>UIViewController</code>的子类叫做<code>ZOCTimelineViewController</code></p>
+
+<h2>初始化 和 释放</h2>
+
+<p>推荐的做法是 在类里面把<code>dealloc</code>方法放在实现方法里的最上面(放在<code>@synthesize</code> 和 <code>@dynamic</code>后面)同时把<code>init</code>方法放在<code>dealloc</code>方法后面。一旦有多个初始化方法时，你应该把自定义初始化方法作为第一个方法，因为这样做可能更具有逻辑性，次要的初始化方法则紧随其后。自从有了ARC之后，越来越没有必要实现delloc方法了，但是仍然很有必要把dealloc方法靠近在你的init方法中，你可以类比需要成对出现一样。通常在delloc方法中你是撤销一些你在init方法做过的事情。</p>
+
+<p><code>init</code> 方法应该是一下这种结构:</p>
+
+<pre><code>- (instancetype)init
+{
+    self = [super init]; // call the designated initializer
+    if (self) {
+    // Custom initialization
+    }
+    return self;
+}
+</code></pre>
+
+<p>对于为什么要给self 赋值 <code>[super init]</code>的返回值以及如果我们不这样做又会发生什么 是一件非常有意思的事情。</p>
+
+<p>我们习惯使用类似<code>[[NSObject alloc] init]</code>的表达式介于<code>alloc</code> and <code>init</code>正在减弱。Objective-C的特性之一就是叫做<code>两个阶段性的创建</code>,意思就是创建和初始化是两个完全独立的过程,因此这两个不同的方法都需要被调用。
+&ndash;<code>alloc</code>负责对象的创建.这个过程涉及到要在应用的虚拟内存中需要足够的内存来维持这个对象存在，写入了一个<code>isa</code>指针，初始化引用计数器，并且让所有的实例变量归零。
+&ndash;<code>init</code>负责对象的初始化，意味着需要让对象处于一种可用的状态。意思就是给实例变量设立一个对象并且给他一个有效的初始值。</p>
+
+<p><code>alloc</code>方法将会返回一个有效的未初始化的实例，每一个发送给实例的消息都会被翻译成参数名为<code>self</code>的<code>objc_msgSend()</code>方法的调用，并且作为<code>alloc</code>方法的返回值。在这种情况下,<code>self</code>在方法的有效方法内湿绝对有效地，从这两步我们可以得出:第一个发给新创建的实例的方法应该按照协议来说是<code>init</code>方法，值得注意的是，相比返回<code>self</code>，<code>NSObject</code>的中<code>init</code>的实现并没有做得更多</p>
+
+<p><code>init</code>方法中还有一个需要注意的是:作为一个信号，在初始化并不成功（返回<code>nil</code>）的情况下，初始化总会因为各种原因而导致失败，比如:传入值是一种错误的格式，或者是在成功初始化对象的传值失败，</p>
+
+<p>这就告诉我们为什么需要用<code>self = [super init]</code>,如果你的父类表明了她不能成功初始化他们自己，你必须要明白你处于一个不稳定的状态，因此你也没有必要继续初始化工作同时在方法实现中将会返回<code>nil</code>,如果你不这样做的话，对象将无法使用，最终将会导致你的app崩溃。</p>
+
+<p>为了返回一个不同的实例而不是他们曾经调用过的，在<code>init</code>方法中给<code>self</code>重新赋值还是很有必要的，在<a href="#class-cluster">Class cluster</a>或者某些返回同样实例（不可改变）对象的Cocoa类里有这些例子</p>
+
+<h3>指定的 和 次要的 初始化方法</h3>
+
+<p>Objective-C中具有指定型和次要型两种初始化的概念。指定型初始化就是对初始化的参数完全实现。次要型初始化就是一个调用指定型初始化的方法并且会赋予一些默认的参数值。</p>
+
+<pre><code>@implementation ZOCEvent
+
+- (instancetype)initWithTitle:(NSString *)title
+                     date:(NSDate *)date
+                 location:(CLLocation *)location
+{
+    self = [super init];
+    if (self) {
+        _title    = title;
+        _date     = date;
+        _location = location;
+    }
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                     date:(NSDate *)date
+{
+    return [self initWithTitle:title date:date location:nil];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+{
+    return [self initWithTitle:title date:[NSDate date] location:nil];
+}
+
+@end
+</code></pre>
+
+<p>在上面的例子中，<code>initWithTitle:date:location:</code>是指定型的初始化，而另外两个就是次要型初始化，因为他们在实现的过程中调用了指定型初始化</p>
+
+<h4>指定型初始化</h4>
+
+<p>一个类有且只有一个指定型初始化方法，所有其他的初始化方法都调用指定型初始化方法(尽管在这个例子中是个例外).
+在这里并没有要求那个初始化方法必须要调用。从类的层级来说，无论哪个指定型初始化方法调用都是有效地，并且要保证在类的层级中从他的根类(<code>NSObject</code>)到你的类，所有的指定型初始化方法都被调用了.
+实际上是说，从他的祖类开始，第一个初始化代码就已经执行了，并且都执行到当前这个类里了；最终给了所有在这个架构里的类机会执行初始化工作.这就表明了:在你做实际工作之前你想要所有从你父类继承的东西是出于一个可用的状态，所有在苹果架构里的类都需要遵守这个规则并且你的类应该同样如此。</p>
+
+<p>当我们定义一个新的类时，这里有三种状态有可能会遇到:</p>
+
+<ol>
+<li>没有必要重载任何初始化方法</li>
+<li>重载了指定型初始化方法</li>
+<li>定义了一个新的初始化方法</li>
+</ol>
+
+
+<p>第一种情况最容易被忽视:我们根本没有必要添加任何具体的逻辑在类的初始化当中，你只要依靠父类的指定型初始化方法就行.
+当你想提供额外的初始化逻辑时你可以考虑重载指定型初始化。你只应该重载目前父类的指定型初始化方法并且确定你的实现方法里调用了你重载的父类方法。
+一个最典型的例子就是看你的<code>UIViewController</code>的子类是否重载了<code>initWithNibName:bundle:</code>:</p>
+
+<pre><code>- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    // call to the superclass designated initializer
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+</code></pre>
+
+<p>在<code>UIViewController</code>的子类中如果调用<code>init</code>方法将会是报错，因为调用者在初始化你的类时将会调用<code>initWithNib:bundle</code>这个方法，你自己写的init方法将不会调用。同时这个也和调用任何指定型初始化方法都是有效相矛盾。</p>
+
+<p>如果你想要使用你自己的指定型初始化方法你需要遵守以下三个步骤来确保是这个行为是否正确:</p>
+
+<ol>
+<li>声明你的指定型初始化方法，并且确保会调用当前父类的指定型初始化方法;</li>
+<li>重载父类的指定型初始化方法类并且在里面调用你自己的新的初始化方法;</li>
+<li>记录新的初始化方法;</li>
+</ol>
+
+
+<p>许多开发者都会忘记最后两部，这并不是仅仅很少关心问题，但是在第二步已经是很明显的反对框架的规则，并且会导致一些不确定的行为和bug，让我们来看看正确的实现方法:</p>
+
+<p>@implementation ZOCNewsViewController</p>
+
+<pre><code>- (id)initWithNews:(ZOCNews *)news
+{
+    // 调用父类的指定型初始化方法
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        _news = news;
+    }
+    return self;
+}
+
+// 重载父类的指定型初始化方法
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle     *)nibBundleOrNil
+{
+    // 调用新的指定型初始化方法
+    return [self initWithNews:nil];
+}
+</code></pre>
+
+<p>如果你没有重载<code>initWithNibName:bundle:</code>方法并且调用者决定用这个方法初始化（将是一个完美的选择）,那么<code>initWithNews:</code>将不会被调用同时会导致不正确的初始化次序，因为那个类的具体的初始化逻辑将不会被执行.</p>
+
+<p>尽管我们可以推断哪个方法是指定型初始化方法,但是明确点清晰点还是好的(未来你或者其他的要在你的代码基础上工作的人将会感谢你).这里有两种策略你可以考虑去使用:
+第一个就是在文档中明确表明那个方法是指定型初始化方法，但是最好 你要对你的编译器反倒满意并且你可以通过使用编译器官方的<code>__attribute__((objc_designated_initializer))</code>来标明你的意图
+通过这个直接做法同样也会使得编译器帮助你，同时如果在你的指定型初始化方法中你没有调用父类的指定型初始化方法，编译器则会报出一个警告</p>
+
+<p>因此，在没有调用类的指定型初始化方法中(反过来只提供了必要的参数)同时调用类的架构中其他的指定型方法将会使得类处于一种无用的状态.参考之前的例子,并没有并没有需要提供news参数<code>ZOCNewsViewController</code>的指针，在没有news参数的情况下，你可以通过让其他的指定型初始化方法无效来强制调用一个具体的指定型初始化方法。这样 如果你想调用这个方法，通过使用其他的编译器直属的<code>__attribute__((unavailable("Invoke the designated initializer")))</code>将会使得编译器弹出一个错误。</p>
+
+<p>以下是之前例子中的头文件的实现(记住宏的使用使得代码不会重复和不会冗长).</p>
+
+<pre><code>@interface ZOCNewsViewController : UIViewController
+
+- (instancetype)initWithNews:(ZOCNews *)news ZOC_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle   *)nibBundleOrNil ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
+- (instancetype)init ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
+</code></pre>
+
+<p>从上面的描述我们可以得出一个结论：你不能在指定型初始化方法中调用次要型初始化方法(如果你遵守协议的话，次要型初始化方法将会调用指定型初始化方法),如果这样做的话，调用将会触发并且重载子类的初始化方法，最终导致无限的递归.</p>
+
+<p>但是对于这些规则，有一个是例外的，对象是否遵守<code>NSCoding</code>协议，并且它是通<code>initWithCoder:</code>来初始化的。</p>
+
+<p>我们要去区分对象的父类什么时候遵循<code>NSCoding</code>协议</p>
+
+<p>在之前的例子中，如果你只是调用<code>[super initWithCoder:]</code>，你将有可能在指定型初始化方法中共用一些初始化代码;然而把代码转移到私有方法中能够很好的处理这个问题(i.e.  <code>p_commonInit</code>)</p>
+
+<p>当你的父类并没有遵守<code>NSCoding</code>协议时，推荐的做法就是把<code>initWithCoder:</code>设为次要型初始化方法，并且调用<code>self</code>指定型初始化方法。但是你会发现这样做违背了苹果的建议<a href="https://developer.apple.com/library/mac/documentation/cocoa/Conceptual/Archiving/Articles/codingobjects.html#//apple_ref/doc/uid/20000948-BCIHBJDE">Archives and Serializations Programming Guide</a> :</p>
+
+<blockquote><p>对象首先会调用父类的指定型初始化方法来初始化继承后的状态</p></blockquote>
+
+<p>遵守这个话将会导致不确定的行为，如果你的类不是<code>NSObject</code>直属子类的话</p>
+
+<h4>次要型初始化</h4>
+
+<p>正如上面所说，次要型初始化方法就是一些列提供默认值或者行为给指定型初始化方法的方法。
+也就是说，在这些方法中，你分本不需要做任何的强制初始化工作并且，你也不用假装认定这些方法被调用了。我们唯一需要做的是保证指定型初始化方法被调用了.</p>
+
+<p>这就意味着在你的指定型初始化方法中你应该总是调用其他的次要型初始化方法或者你的 <code>self</code>指定型初始化方法,某些时候，因为失误，我们会输入成<code>self</code>，这样做的话就没有遵循初始化的步骤了</p>
+
+<h5>引用文档</h5>
+
+<ul>
+<li><a href="https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCreation.html">https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCreation.html</a></li>
+<li><a href="https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html">https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html</a></li>
+<li><a href="https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/MultipleInitializers.html">https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/MultipleInitializers.html</a></li>
+<li><a href="https://blog.twitter.com/2014/how-to-objective-c-initializer-patterns">https://blog.twitter.com/2014/how-to-objective-c-initializer-patterns</a></li>
+</ul>
+
+
+<h3>instancetype</h3>
+
+<p>我们我经常没有意识到Cocoa到处都是一些规则，因为他们可以使得编译器更加灵活。不管这个编译器是否用了<code>alloc</code> 或 <code>init</code>方法，他们都知道，尽管返回值是<code>id</code>，这些方法都会返回一个接收类型的类的实例。因此也会允许编译器提供并且强制类型检查(i.e 检查方法调用的返回实例是有效的).Clang聪明之处就在于一个叫做<a href="http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">相关结果类型</a>的东西,意思就是:</p>
+
+<blockquote><p>发送给alloc和init方法的消息将会有一个和接收类的实例静态类型</p></blockquote>
+
+<p>想了解更多的自动识别的相关结果类型，请参阅<a href="(http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">appropriate section</a>)Clang语言扩展指导</p>
+
+<p>相关结果类型清楚地表明了，通过使用<code>instancetype</code>关键字作为返回值类型，这对在工厂方法或者构造器的使用非常有益。这将会隐藏编译器正确的值隐藏，可能更重要的是，子类也会执行的更加正确;</p>
+
+<pre><code>@interface ZOCPerson
++ (instancetype)personWithName:(NSString *)name;
+@end
+</code></pre>
+
+<p>尽管如此，根据Clang编译器中的详细描述，<code>id</code>可以被编译器认为<code>instancetype</code>，在<code>alloc</code> or <code>init</code> 的情况下，我们强烈建议使用<code>instancetype</code>作为类的返回值，并且让实例方法返回一个类的实例.你在你自己的api里最好也沿用这个习惯,再一次通过微调你的代码来提高代码的可阅读性:一眼就可以看出那个方法是返回类的实例。很长一段时期你都会感谢你做的这些.</p>
+
+<h5>参考资料</h5>
+
+<ul>
+<li><a href="http://tewha.net/2013/02/why-you-should-use-instancetype-instead-of-id/">http://tewha.net/2013/02/why-you-should-use-instancetype-instead-of-id/</a></li>
+<li><a href="http://tewha.net/2013/01/when-is-id-promoted-to-instancetype/">http://tewha.net/2013/01/when-is-id-promoted-to-instancetype/</a></li>
+<li><a href="http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types</a></li>
+<li><a href="http://nshipster.com/instancetype/">http://nshipster.com/instancetype/</a></li>
+</ul>
+
+
+<h3>初始化模式</h3>
+
+<h4>类簇</h4>
+
+<p>苹果官方文档对类簇的描述是:</p>
+
+<p>关于一个对 公共抽象父类下的私有的，混合的子类进行分组的架构</p>
+
+<p>如果你对这个描述感到熟悉的话，那么你的直觉是正确的。类簇可以被认为是苹果对抽象工厂设计模式的隐喻。之所以提类簇这个概念很简单:
+在你初始化过程中你将会有一个抽象类，作为初始化方法的参数来适用于一个逻辑和实例化一个具体的子类
+public facing 类应该对它内部的子类很熟悉 因此能够返回一个最合适完成这个任务的私有子类。这个设计模式非常有用因为它让只认识与对象通讯的接口的调用者那里消除了初始化逻辑复杂性，并没有过多的关注实现部分。类簇在苹果的框架里广泛的使用。比如NSNumber，根据提供的不同的数据类型，会返回一个合适的子类。还有NSArray，返回一个具体的且最佳存储的子类。</p>
+
+<p>这个设计模式的魅力在于：调用者可以完全不了解具体的子类。事实上可以再没有泄露任何具体实现的情况下设计一个库来交换返回的类。只要调用者完全遵守建立在抽象类下的协议</p>
+
+<p>在我们的经验中，类簇的使用对移除许多条件型代码非常有用。一个典型的例子就是你在iPad和iOS拥有相同的UIViewController子类，但是行为的不同却取决于设备的不同。一个比较幼稚的实现方法就是在需要这个逻辑的方法里添加一些条件代码来检查这个设备。尽管最初条件逻辑应用的地方也许十分少，但是最后都会很自然低在多处使用她。一种更好的设计模式是通过创建一个抽象的和一般的ViewController来完成。为了应对所有的设备，它将会包含所有共享的逻辑和两种不同专属的子类。一般的viewcontroller将会检查当前设备并且根据设备的不同来返回最合适的子类。</p>
+
+<pre><code>@implementation ZOCKintsugiPhotoViewController
+
+- (id)initWithPhotos:(NSArray *)photos
+{
+    if ([self isMemberOfClass:ZOCKintsugiPhotoViewController.class]) {
+        self = nil;
+
+        if ([UIDevice isPad]) {
+            self = [[ZOCKintsugiPhotoViewController_iPad alloc]     initWithPhotos:photos];
+        }
+        else {
+            self = [[ZOCKintsugiPhotoViewController_iPhone alloc]   initWithPhotos:photos];
+        }
+        return self;
+    }
+    return [super initWithNibName:nil bundle:nil];
+}
+
+@end
+</code></pre>
+
+<p>上面的代码告诉我们如何创建一个类簇。首先 <code>[self isMemberOfClass:ZOCKintsugiPhotoViewController.class]</code> 语句是为了阻止重载子类当中的初始化方法的必要来避免陷入无线递归。如果之前的检查是true,<code>[[ZOCKintsugiPhotoViewController alloc] initWithPhotos:photos]</code>这个方法将会被调用,<code>self = nil</code>是为了移除那些即将被释放<code>ZOCKintsugiPhotoViewController</code>实例的引用。
+让我们假设我们正在iPhone上运行这些代码，<code>ZOCKintsugiPhotoViewController_iPhone</code>并没有重载<code>initWithPhotos:</code>方法。在这种情况下，当我们执行<code>self = [[ZOCKintsugiPhotoViewController_iPhone alloc] initWithPhotos:photos];</code>时，<code>ZOCKintsugiPhotoViewController</code>将会被调用，并且当第一次检查出现时，发现并不是<code>ZOCKintsugiPhotoViewController</code> 因此调用<code>return [super initWithNibName:nil bundle:nil];</code>肯定会失败。正如前面强调的的初始化需要遵守正确的初始化步骤</p>
+
+<h4>单例</h4>
+
+<p>大体上，尽可能的避免使用单例，而是使用独立注入。不过不可避免的单例对象应该使用线程安全模式来创建一个共享的实例。在GCD中。我们可能会使用到<code>dispatch_once()</code></p>
+
+<pre><code>+ (instancetype)sharedInstance
+{
+    static id sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&amp;onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+        return sharedInstance;
+}
+</code></pre>
+
+<p>dispatch_once()的使用 取代下面的老式的:</p>
+
+<pre><code>+ (instancetype)sharedInstance
+{
+    static id sharedInstance;
+    @synchronized(self) {
+        if (sharedInstance == nil) {
+            sharedInstance = [[MyClass alloc] init];
+        }
+    }
+    return sharedInstance;
+}
+</code></pre>
+
+<p><code>dispatch_once()</code>的好处就在于它更快，语义也更简洁明了，因为整个dispatch_once()的想法就是&#8221;执行某个东西一次并且只有一次&#8221;，并且非常精准的明白他们所做的。这种方式同样也会阻止[可能的某种的崩溃][单例singleton_cocoasamurai].
+比较经典的可以接受的单例对象就是GPS和设备加速器。尽管单例对象可以子类化，但是这种情况下是很少见的。这个接口将会证明所给的类是用来作为一个单例的。因此，一个公共的<code>sharedInstance</code>类的实例已经足够了并且没有可写的属性暴露出来。</p>
+
+<p>用单例作为类的容器来来共享代码或者应用的层是非常丑陋的，它应该被翻译成设计的气息</p>
+
+<h2>属性</h2>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Young</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T02:06:18+08:00" pubdate data-updated="true">Aug 3<sup>rd</sup>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/08/03/objective-c-art-class/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/01/php-beginner/" title="Previous Post: Php Beginner">&laquo; Php Beginner</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/08/03/objective-c-art-conditional-statement-name-and-so-on/" title="Next Post: Objective-C 编程艺术:条件语句、命名">Objective-C 编程艺术:条件语句、命名 &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/ios-interview-note/">iOS Interview Note</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/ios-block/">iOS-block</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/ios-autolayout/">iOS---AutoLayout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/pythonbi-ji/">Python笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/06/ru-he-ti-gao-ios/">如何提高iOS</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Young -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

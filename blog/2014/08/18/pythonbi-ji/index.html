@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Python笔记 - 黄杨的技术博客</title>
+  <meta name="author" content="Young">
+
+  
+  <meta name="description" content="python教程: 终端里输入python启动进入python交互式环境
+输入exit()退出环境 进入文件坐在位置，然后运行 python xx.py就可以运行该文件了
+print ‘ xxx’,’xxx’,’xxx&#8217;输出一连串的字符串 print &lsquo;the quick &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://youngforever1990.github.io/blog/2014/08/18/pythonbi-ji">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="黄杨的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">黄杨的技术博客</a></h1>
+  
+    <h2>持之以恒，喜欢就是复制，爱就是创造</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:youngforever1990.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Python笔记</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-18T20:35:42+08:00" pubdate data-updated="true">Aug 18<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>python教程:</p>
+
+<p>终端里输入python启动进入python交互式环境
+输入exit()退出环境</p>
+
+<p>进入文件坐在位置，然后运行 python xx.py就可以运行该文件了
+print ‘ xxx’,’xxx’,’xxx&#8217;输出一连串的字符串
+ print &lsquo;the quick brown fox&rsquo;,&lsquo;jumps over&rsquo;,&lsquo;the lazy dog’
+the quick brown fox jumps over the lazy dog
+raw_input:可以让用户输入字符串，并存放到一个变量里</p>
+
+<p>name = raw_input(&lsquo;please enter your name: &rsquo;)
+根据预先提示，输入</p>
+
+<p>  #是用来注释内容的：</p>
+
+<p>python 是对大小写敏感的;</p>
+
+<p>数据类型表示：</p>
+
+<p>整数：和我们平常使用的数字一模一样</p>
+
+<p>浮点数:</p>
+
+<p>字符串: “xxx”表示</p>
+
+<p>‘xxx’:表示xxx的三个字符;</p>
+
+<p>转义字符\ 包含’和 ’’时使用，在字符前面</p>
+
+<p>‘I\m \”OK\”!’</p>
+
+<p>\转移字符 \n换行符  \t制表符 \表示\</p>
+
+<p>print &lsquo;’&#8217;line1</p>
+
+<p>&hellip; line2</p>
+
+<p>&hellip; line3’’’ 用来表示多行字符</p>
+
+<p>在前面加入r可以使其缩进</p>
+
+<p>python里有一个特殊的值，用None表示,None不能理解为0,因为0是有意义的，None是一个特殊的空值</p>
+
+<p>pythond 的变量名不能应数字开头;</p>
+
+<p>同一个变量可以反复赋值，并且用不同数据类型赋值</p>
+
+<p>字符编码问题:</p>
+
+<p>UTF-8是一种可变长编码,UTF-8编码有一个额外的好处，就是ASCII编码实际上可以被看成是UTF-8编码的一部分，所以，大量只支持ASCII编码的历史遗留软件可以在UTF-8编码下继续工作。</p>
+
+<p>ord(‘A’)将字符串转为数字</p>
+
+<p>chr(’65&#8217;)将数字转为字符串</p>
+
+<p>print u’中文’ unicode形式表示</p>
+
+<p>但你的Python源代码包含中文时，务必保存为UTF-8编码.</p>
+
+<p>当Python解释器读取源代码时，为了让它按UTF-8编码读取，我们通常在文件开头写上这两行：</p>
+
+<p>转码：
+  #!/usr/bin/env python
+  # &ndash;<em>&ndash; coding: utf-8 &ndash;</em>&ndash;
+去除list列表中最后一个元素 classmates[-1]
+添加元素：classmates.append(‘Adam’)
+插入元素:classmates.insert(1,’jack’)
+删除末尾的元素:classmate.pop()</p>
+
+<p>tuple 元组：不可变</p>
+
+<p>tuple和list数组类似，但是不可增删改查；
+只有一个元素的时候在后面加入，号来消除歧义
+tuple如果里面的是list元素的话其实也可以更改；</p>
+
+<p>for x in ….循环语句</p>
+
+<p>range(x)生成0~x-1的数字</p>
+
+<h5>字典和set</h5>
+
+<p>通过dict提供的get方法，如果key不存在，可以返回None，或者自己指定的value：
+d.get(&lsquo;Thomas&rsquo;,-1)
+删除一个key，value也会删除
+d.pop(&lsquo;Bob&rsquo;)
+牢记第一条:dict的key必须是不可变的对象</p>
+
+<p>set 和dict类似，也是key的集合，但不存储value，由于key不能重复，所以在set中，没有重复的key，s可以重复添加，但是没有效果.</p>
+
+<p>set可以看成数学意义上的无序和无重复元素的集合，因此，两个set可以做数学意义上的交集、并集等操作：
+set和dict里面同样不能放入可变对象;</p>
+
+<p>当我们调用a.replace(&lsquo;a&rsquo;, &lsquo;A&rsquo;)时，实际上调用方法replace是作用在字符串对象&#8217;abc&#8217;上的，而这个方法虽然名字叫replace，但却没有改变字符串&#8217;abc&#8217;的内容。相反，replace方法创建了一个新字符串&#8217;Abc&#8217;并返回，如果我们用变量b指向该新字符串，就容易理解了，变量a仍指向原有的字符串&#8217;abc&#8217;，但变量b却指向新字符串&#8217;Abc&#8217;了：</p>
+
+<p>对于不变对象来说，调用对象自身的任意方法，也不会改变该对象自身的内容。</p>
+
+<h4>函数</h4>
+
+<p>help(abs):查看abs函数的帮助信息
+函数返回多个值其实返回的是元组
+定义默认参数时必须指向不可变对象</p>
+
+<p>对于任意函数，都可以通过类似func(*argc,**kw)的形式调用它，无论它的参数是如何定义的。</p>
+
+<p>*args是可变参数，args接收的是一个tuple
+**kw是关键字参数，kw接收的是一个dict</p>
+
+<h4>生成器</h4>
+
+<p>只要把一个列表生成式的[]改成()</p>
+
+<blockquote><blockquote><blockquote><p>L = [x * x for x in range(10)]</p>
+
+<p>g = (x * x for x in range(10))</p></blockquote></blockquote></blockquote>
+
+<p>generator保存的是算法，每次调用next()，就计算出下一个元素的值，直到计算到最后一个元素，没有更多的元素时，抛出StopIteration的错误。</p>
+
+<h3>正则表达式</h3>
+
+<p>\d 可以匹配一个数字，\w可以匹配一个数字或字母。
+.可以匹配任意字符，*表达任意个字符（包括0个）
++表示至少一个字符，用？表示0个或1个字符
+用{n}表示n个字符，用{n,m}表示n-m个字符：
+\s可以匹配一个空格（也包括Tab等空白符）
+‘-’是特殊字符，在正则表达式中，要用&#8217;\&lsquo;转义
+特殊字符都用‘\’转义</p>
+
+<p>A|B 可以匹配A或B，
+^表示行的开头，^\d必须以数字开头
+$表示行的结束，\d$表示必须以数字结束
+要做更精确地匹配，可以用[]表示范围</p>
+
+<p>利用正则表达式来切割字符串
+re.split(r&#8217;[\s\,\;]+&lsquo;,&#8217;a,b;;c  d&rsquo;)</p>
+
+<p>分组：
+用()表示的就是要提取的分组(Group)
+group(0)永远是原始字符串，group(1)第一个字符串，group(2)第二个字符串</p>
+
+<p>正则匹配默认是贪婪匹配，也就是尽可能匹配多的字符.
+\d+采用贪婪匹配
+\d?采用非贪婪匹配</p>
+
+<h3>常见内建模块</h3>
+
+<p>由于标准的Base64编码后可能出现字符+和/，在URL中就不能直接作为参数，所以又有一种&#8221;url safe&#8221;的base64编码，其实就是把字符+和/分别变成-和<em>：
+base64.b64encode(&lsquo;xxxxxx&rsquo;)
+base64.b64decode(&lsquo;xxxxxx&rsquo;)
+由于标准的Base64编码后可能出现字符+和/，在URL中就不能直接作为参数，所以又有一种&#8221;url safe&#8221;的base64编码，其实就是把字符+和/分别变成-和</em>:
+base64.urlsafe_b64encode(&lsquo;&rsquo;)
+base64.urlsafe_b64decode(&lsquo;&rsquo;)</p>
+
+<p>=字符也可能出现在Base64编码中，但=用在URL、Cookie里面会造成歧义，所以很多时候Base64后的=符号去掉</p>
+
+<p>因为Base64是把3个字节变为4个字节，所以，Base64编码的长度永远是4的倍数，因此，需要加上=把Base64字符串的长度变为4的倍数，就可以正常解码了</p>
+
+<p>Base64是一种任意二进制到文本字符串的编码方法，常用于在URL、Cookie、网页中传输少量二进制数据</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Young</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-18T20:35:42+08:00" pubdate data-updated="true">Aug 18<sup>th</sup>, 2014</time>
+      
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://youngforever1990.github.io/blog/2014/08/18/pythonbi-ji/" data-via="" data-counturl="http://youngforever1990.github.io/blog/2014/08/18/pythonbi-ji/" >Tweet</a>
+  
+  
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/08/06/ru-he-ti-gao-ios/" title="Previous Post: 如何提高iOS">&laquo; 如何提高iOS</a>
+      
+      
+        <a class="basic-alignment right" href="/blog/2014/08/19/ios-autolayout/" title="Next Post: iOS---AutoLayout">iOS---AutoLayout &raquo;</a>
+      
+    </p>
+  </footer>
+</article>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/ios-interview-note/">iOS Interview Note</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/ios-block/">iOS-block</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/ios-autolayout/">iOS---AutoLayout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/pythonbi-ji/">Python笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/06/ru-he-ti-gao-ios/">如何提高iOS</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Young -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

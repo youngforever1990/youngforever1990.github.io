@@ -1,0 +1,2245 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>黄杨的技术博客</title>
+  <meta name="author" content="Young">
+
+  
+  <meta name="description" content="知识基础篇 1.简述下ARC，对ARC的理解？ 1.不能使用retain/release/retainCount/autorelease;
+2.不能使用NSAllocateObject/NSDeallocateObject;
+3.必须遵守内存管理的命名规则；
+4.不要显示调用dealloc；
+5. &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://youngforever1990.github.io">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="黄杨的技术博客" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">黄杨的技术博客</a></h1>
+  
+    <h2>持之以恒，喜欢就是复制，爱就是创造</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="https://www.google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:youngforever1990.github.io" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/06/ios-interview-note/">iOS Interview Note</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-06T09:38:42+08:00" pubdate data-updated="true">Sep 6<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>知识基础篇</h2>
+
+<p>1.简述下ARC，对ARC的理解？</p>
+
+<pre><code>1.不能使用retain/release/retainCount/autorelease;
+2.不能使用NSAllocateObject/NSDeallocateObject;
+3.必须遵守内存管理的命名规则；
+4.不要显示调用dealloc；
+5.使用@autoreleasepool块替代NSAutoreleasePool；
+6.不能使用区域（NSZone）；
+7.对象型变量不能作为C语言结构体（struct/union）的成员；
+8.显示转换"id"和"void * ";
+    * id型或对象型变量赋值给void*或者逆向赋值时需要特定的转换，如果需要单纯的赋值
+    则可以使用“__bridge转换”
+    * 附有__weak修饰符的变量所引用的对象被废弃，即将nil赋值给了该变量；
+    * 使用__weak修饰符的变量，即是使用注册到autoreleasepool中的对象;
+    * 大量使用__weak修饰符变量，注册到autoreleasepool的对象也会大大增加;
+</code></pre>
+
+<p>2.讲一讲为什么delegate的属性需要用 assign？</p>
+
+<pre><code>循环引用
+所有的引用计数系统，都存在循环应用的问题。例如下面的引用关系：
+对象a创建并引用到了对象b.
+对象b创建并引用到了对象c.
+对象c创建并引用到了对象b.
+这时候b和c的引用计数分别是2和1。当a不再使用b，调用release释放对b的所有权，因为c还引用了b，所以b的引用计数为1，b不会被释放。b不释放，c的引用计数就是1，c也不会被释放。从此，b和c永远留在内存中。
+这种情况，必须打断循环引用，通过其他规则来维护引用关系。比如，我们常见的delegate往往是assign方式的属性而不是retain方式的属 性，赋值不会增加引用计数，就是为了防止delegation两端产生不必要的循环引用。如果一个UITableViewController 对象a通 过retain获取了UITableView对象b的所有权，这个UITableView对象b的delegate又是a，如果这个delegate是 retain方式的，那基本上就没有机会释放这两个对象了。自己在设计使用delegate模式时，也要注意这点。
+</code></pre>
+
+<p>3.属性的赋值语句，手动编写？</p>
+
+<pre><code>-(void) setEngine :(Engine *)newEngine
+    {
+        [engine release];   
+        [newEngine retain];
+        engine = newEngine
+    }
+    1. 如果不释放旧的，每一次都retain，到时候难以释放
+    2. 如果赋值使用engine = [newEngine retain]    如果当赋值对象和原来对象是同一个时，则原有对象的保留计数器变为0了
+</code></pre>
+
+<p>4.谈谈你对AutoLayout的理解？及iOS8适配问题如何处理？</p>
+
+<pre><code>    自动布局使用总结
+    1.不能在代码中设置frame和size
+    2.使用constraint约束 上下左右，周边view之间的距离
+    3.比如有多个label和button，image，设置 hugging priority 和 compress resistance priority 来选择
+
+    可参考王巍的文章
+</code></pre>
+
+<p><a href="http://onevcat.com/2012/09/autoayout/">AutoLayou入门</a></p>
+
+<pre><code>    autolayout 使用的三种方式：ib，vfl，代码形式
+
+    同层级 添加到父view，不同层级 添加到最近的父view上，有层次关系的两个view之间的约束关系，添加到层次较高的父view上;
+</code></pre>
+
+<p>5.谈谈对Block的理解？与代理的优势？block的实现原理？</p>
+
+<pre><code>block的使用分类总结
+
+ int additional = 5;
+ int (^addBlock) (int a , int b) = ^(int a, int b){
+      return a + b +additional;
+ };
+ int add = addBlock(2,5);
+
+
+ 1. block的强大之处：在声明它的范围内，所有变量都可以为其所捕获。默认情况下，被块所捕获的变量，是不可以在块里修改的。上面的例子 addtionnal变量不可改变，如果要改变它，声明的变量加上,int __block addtionnal = 5 ,不加则会报错，即使是OC对象，加上__weak也不行，至于为什么？详情请咨询，Objective-C高级编程;
+
+ Note: 改变block外的变量的值，则要__block
+
+ 2. 如果将block定义在Objective-C类的实例方法中，那么除了可以访问类的所有实例变量之外，还可以使用self变量，block总能修改实例变量，所以在声明时无须加__block，不过，如果通过读取或写入操作捕获实例变量，那么也会自动把self变量一并捕获，因为实例变量和self所指代的实例关联在一起了
+
+ note:self也是对象，因而block在捕获它的时也会将其保留，如果self所指代的那个对象同时保留了block，那么就会导致保留环。
+
+ 3.定义block的时候，其所占的内存区域是分配在栈里的，块只在定义它的那个范围内有效，
+void (^block）()
+ if(…){
+      block = ^{NSlog(…..)}
+ }else{
+      nslog…...
+ }
+ 这段代码容易出问题，因为块在栈里分配，离开了相应的范围就有可能会把block清掉，所以这时候需要拷贝，把block复制到堆上，因此也成了带引用计数的对象了，后续的复制操作也不会执行复制，而只是单方面的计数增加，不使用block时，在ARC下，自动释放，在MRC下，则自己release。 这里简要介绍了 栈 block 和 堆 block
+
+ 4.全局block：
+ 全局block 不会捕获任何状态，运行时也无需有状态来参与，，块所使用的整个内存区域在编译期已经完全确定了，全局块可以声明在全局内存里，而不是每次用到的时候在栈中创建，全局块的拷贝操作是个空操作，因为不可能为系统所回收。 
+
+ note：在编译期间已经完全确定了
+
+ 5.使用 typedef  定义block
+ 使用typedef 定义block 给类型起了个易读得名字
+ 常见样式:
+ typedef int (^EOCSomeBlock) (BOOL flag,int value);
+
+ EOCSomeBLock block = ^(BOOL flag,int value){
+ }
+  typedef xxblock … 一般定义在类的@interface前面    
+
+ 6.handle块尽量使用一个吧，因为分离出来，方便调试，灵活
+
+ 7.block保留环的问题
+ 如果 block里有引用self，并且 self类里面又保留了block，容易发生保留环。
+
+ 如果块所捕获的对象直接或间接地保留块本身，那么就要小心保留环问题；                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
+</code></pre>
+
+<p>6.谈谈对view和 layer的关系？</p>
+
+<pre><code>通常会将 UIView 理解为能够在屏幕上直接制图的对象,实际上从技术的 角度而言,视图自身并不在窗口上绘图,它只知道如何在 
+CALayer 对象上绘图。 我们在创建一个 UIView 实例时,该对象会自动创建一个层(自己创建的这个层 称为隐式层)。视图在绘
+图时,将内容画在自己的层上。当视图在层上完成绘图 后,系统会将层拷贝到屏幕上。如果我们创建一个 CALayer 层的实例,我们
+称之为显示层,层其实就是一副位图。(层的委托对象是 UIView)
+</code></pre>
+
+<p>7.谈谈对MVC的设计模式的理解？了解MVVM？有关单例？</p>
+
+<pre><code>M 表示 model,即数据模型,V 表示 view,即视图,C 表示 viewController, 即视图控制器,使用MVC 的目的是将 M 和 V 
+的实现代码分离,从而使同一个程 序可以使用不同的表现形式。C 存在的目的则是确保 M 和 V 的同步
+</code></pre>
+
+<p>8.谈谈kvc-kvo 的理解</p>
+
+<pre><code>(1)KVC(键值编码)是一种间接访问对象实例变量的机制,该机制可以 不通过存取方法就可以访问对象的实例变量。非对象类型的变
+量将被自动封装或 者解封成对象。此外,使用 KVC 能够简化代码。我们需要注意 KVC 有两个较为 明显的缺点,一旦使用 KVC 
+你的编译器无法检查出错误,即不会对设置的键、 键路径进行错误检查,且执行效率要低于(虽然效率已经很高,你已经感觉不到) 
+合成存取器方法和自定的 setter 和 getter 方法。因为使用 KVC 键值编码,它必 须先解析字符串,然后在设置或者访问对象
+的实例变量。
+(2)KVO(键值观察)是一种能使得对象获取到其他对象属性变化的通知
+机制。
+(3)实现 KVO 键值观察模式,被观察的对象必须使用 KVC 键值编码来修
+改它的实例变量,这样才能被观察者观察到。因此,KVC 是 KVO 的基础或者说 KVO 的实现是建立在KVC 的基础之上的。
+</code></pre>
+
+<p>9.数据存储方式有哪几种？FMDB和mysql？用过coredata吗？</p>
+
+<p><a href="http://www.infoq.com/cn/articles/data-storage-in-ios">对比iOS中的四种数据存储</a>
+<a href="http://www.justinyan.me/post/1426">枫言枫语</a></p>
+
+<pre><code>文件写入、对象归档、sqlite3 数据库、coredata
+
+Raw File APIs
+UserDefault
+NSCoding =&gt; NSKeyedArchived
+Plist File
+SQLite(使用C语言)/FMDB
+CoreData
+
+NSUserDefaults,用于存储配置信息，数据存放在内存里；
+SQLite，用于存储查询需求较多的数据
+CoreData，用于规划应用中的对象
+使用基本对象类型定制的个性化方案
+
+CoreData是一个管理方案，他的持久化可以通过SQLite、XML或二进制文件储存，
+它可以把整个应用中的对象建模并进行自动化的管理
+</code></pre>
+
+<p>10.用过哪些测试工具？会用instrument测试工具吗？</p>
+
+<pre><code>主要是使用内存泄露问题，build 程序 ，leak，高峰片段， calltree 
+</code></pre>
+
+<p>11.推送做过么？</p>
+
+<p>12.了解swift吗？哪些要注意的地方？易混点？</p>
+
+<p>13.用过多线程没有，谈谈GCD和NSOperation的区别。</p>
+
+<p><a href="http://onevcat.com/2014/03/common-background-practices/">关于GCD和NSOperation的区别</a></p>
+
+<pre><code>NSOperation:
+    NSOperation是基于GCD的基础上建立的，苹果建议使用GCD前，考虑使用NSOperation可不可以实现，这样或许会简单点;
+    NSOperation具有很强的独立性，并且他不需要考虑底层多线程的详细实现。不仅可以用NSOperationQueue同时可以cancel、观察任务处理队列的任务；
+
+GCD：
+    1.使得程序代码更加简洁，描述性非常强;
+    2.你不需要像NSOperation那样创建自定义的NSOperation子类或者绑定参数传给operation
+</code></pre>
+
+<p>14.textkit用过没有？</p>
+
+<p>15.关于图片存储，你是存在本地，还是怎么样的？</p>
+
+<pre><code>存在沙盒的几个目录里，然后读取，可以查看兴业银行图片缓存机制，或者是
+</code></pre>
+
+<p>16.iOS 消息机制  objc_msgsend的arm汇编实现  SEL结构体成员</p>
+
+<p>17.iOS 运行时机制</p>
+
+<p>18.谈谈原子和非原子的区别？</p>
+
+<pre><code>原子操作: 
+atomic
+原子操作（原子性是指事务的一个完整操作，操作成功就提交，反之就回滚. 原子操作就是指具有原子性的操作），
+在objective-c 属性设置里面默认的就是atomic，意思就是setter/getter函数是一个原子操作，
+如果多线程同时调用setter时，不会出现某一个线程执行完setter所有语句之前，另一个线程就开始执行setter，
+相当于函数头尾加了锁. 这样的话并发访问性能会比较低.
+
+非原子操作:
+nonatomic: 
+非原子操作 一般不需要多线程支持的时候就用它，这样在并发访问的时候效率会比较高. 在objective-c里面通常对象类型都应
+该声明为非原子性的. iOS中程序启动的时候系统只会自动生成一个单一的主线程.程序在执行的时候一般情况下是在同一个线程里
+面对一个属性进行操作. 如果在程序中我们确定某一个属性会在多线程中被使用，并且需要做数据同步，就必须设置成原子性的，
+但也可以设置成非原子性的，然后自己在程序中用加锁之类的来做数据同步
+
+@dynamic 
+表示变量对应的属性访问器方法,是动态实现的,你需要在 NSObject中继承而来的+(BOOL) resolveInstanceMethod:(SEL) 
+sel 方法中指定动态实现的方法或者函数。
+</code></pre>
+
+<p>19.ASIHttp里面的内部实现原理</p>
+
+<p><a href="http://www.infoq.com/cn/articles/afn_vs_asi">对比iOS网络组件：AFNetworking VS ASIHTTPRequest</a>
+<img src="http://infoqstatic.com/resource/articles/afn_vs_asi/zh/resources/image017.png" alt="ASIHTTPRequest 基于机构" /></p>
+
+<pre><code>Core Foundation框架中的CFSocket就是基于BSD Socket开发的。它几乎涵盖了BSD Socket的全部功能，更重要的是把
+Socket整合到事件的处理循环中。Core Founda-tion中较高层的CFStream是基于CFSocket开发的读写流支持。
+
+CFNetwork是基于Core Foundation中CFStream的一个底层高性能网络框架，它由提供基础服务的CFSocketStream，支持
+HTTP协议的CFHTTP，基于CFHTTP用于身份认证的CFHTTPAuthentication和支持FTP协议的CFFTP组成。
+
+正如图9所示，ASI是基于CFHTTP开发的一个组件；而AFN的基础——NSURL，也是基于CFNetwork开发的。也就是说ASI相比AFN
+更加底层，这就从一定程度上造成二者的性能差距。
+
+另一个方面，虽然二者都使用NSOperation和NSOperationQueue实现但底层的区别也导致实现方式上有非常大的差别。
+
+ASI的直接操作对象ASIHTTPRequest是NSOperation的子类，实现了NSCopying协议。在initialize和initWithURL:方法
+中初始化相关属性并配置一系列请求相关参数默认值。此外，ASIHTTPRequest还提供了一系列的实例方法用来配置请求对象。在
+异步请求的处理上，ASIHTTPRequest对象初始化结束后，在startAsynchronous方法中把对象加入共享操作队列。此后，包括
+创建CFHTTPMessageRef，也就是处理网络请求的主要对象（事实上是一个指向__CFHTTPMessage结构的指针），在内的所有操
+作都在ASIHTTPRequest对象所属的子线程中完成。
+
+AFN的直接操作对象AFHTTPClient不同于ASI，是一个实现了NSCoding和NSCopying协议的NSObject子类。AFHTTPClient
+是一个封装了一系列操作方法的“工具类”，处理请求的操作类是一系列单独的，基于NSOperation封装的，
+AFURLConnectionOperation的子类。AFN的示例代码中通过一个静态方法，使用dispatch_once()的方式创建
+AFHTTPClient的共享实例，这也是官方建议的使用方法。在创建AFHTTPClient的初始化方法中，创建了OperationQueue并设
+置一系列参数默认值。在getPath:parameters:success:failure方法中创建NSURLRequest，以NSURLRequest对象实例作
+为参数，创建一个NSOperation，并加入在初始化发方中创建的NSOperationQueue。以上操作都是在主线程中完成的。在
+NSOperation的start方法中，以此前创建的NSURLRequest对象为参数创建NSURLConnection并开启连结。
+
+在异步回调的处理上二者也有区别，ASI采取的是CFHTTP请求完成，直接回调ASIHTTPRequest的实例方法，通过储存的实例对象
+记录的信息完成Delegate模式或Block模式的回调。而AFN则直接使用了NSOperation的completionBlock属性。
+
+这些实现方式也可以看出，ASI显得更加底层，并没有过多使用Cocoa框架中已经封装的API，而AFN则更加实用主义，逻辑简单清
+晰，大量使用了框架API。这一点也是造成二者性能差别的原因之一。
+</code></pre>
+
+<p>20.UIWebview如何改变里面的显示</p>
+
+<p><a href="http://blog.devtang.com/blog/2012/03/24/talk-about-uiwebview-and-phonegap/">唐巧-关于UIWebView和PhoneGap的总结</a></p>
+
+<pre><code> (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request
+[self.webView loadHTMLString:htmlString baseURL:baseURL];
+ [webView stringByEvaluatingJavaScriptFromString:@"alert('done')"];
+</code></pre>
+
+<p>21.谈谈webkit的理解，用过吗？</p>
+
+<p>22.如何实现URL imageView的缓存，自己写该怎么写</p>
+
+<pre><code>NSString *ImageURL = @"YourURLHere";
+NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:ImageURL]];
+imageView.image = [UIImage imageWithData:imageData];
+</code></pre>
+
+<p><a href="http://stackoverflow.com/questions/11511548/best-way-to-cache-images-on-ios-app?rq=1">Best way to cache images on ios app?</a></p>
+
+<p>23.对TCP/IP FTP 等协议的认识？网络传输协议？</p>
+
+<pre><code>引入三次握手”的主要原因是为了避免过时的重复连接再次建立时造成的混乱
+</code></pre>
+
+<p><a href="http://weibo.com/p/1001603752699882542354">对TCP三次握手、四次挥手以及TCP事务协议的理解</a></p>
+
+<pre><code>客户端没有在超时范围内将syn包发送到服务端，客户端会释放所有有关该连接的数据结构，syn包最终会到达服务端，服务端会发
+送一个ack包，并且发送一个reset给服务端，这时服务端就明白收到的是一个过时的连接了。
+
+四次挥手是多出来的fin包，因为收到客户端要求后，并不是马上就段卡连接 ，而是确保所有的数据都已经交给应用程序处理后再来断开连接。
+
+由于在TCP中，没收到对端的一个数据包（除不带数据的ack外）都需要确认，因此服务端在收到客户端发出的FIN包，需要马上发送一个ACK包，客户端以为发出的覅年报丢失了。
+
+三次握手：
+
+    在TCP/IP协议中，TCP协议提供可靠的连接服务，采用三次握手建立一个连接。 
+    第一次握手：建立连接时，客户端发送syn包(syn=j)到服务器，并进入SYN_SEND状态，等待服务器确认； 
+    第二次握手：服务器收到syn包，必须确认客户的SYN（ack=j+1），同时自己也发送一个SYN包（syn=k），即SYN+ACK包，       此时服务器进入SYN_RECV状态； 第三次握手：客户端收到服务器的SYN＋ACK包，向服务器发送确认包ACK(ack=k+1)，此        包发送完毕，客户端和服务器进入ESTABLISHED状态，完成三次握手。 完成三次握手，客户端与服务器开始传送数据.
+
+四次挥手：
+
+    （1）第一次挥手：Client发送一个FIN，用来关闭Client到Server的数据传送，Client进入FIN_WAIT_1状态。
+    （2）第二次挥手：Server收到FIN后，发送一个ACK给Client，确认序号为收到序号+1（与SYN相同，一个FIN占用一个           序号），Server进入CLOSE_WAIT状态。
+    （3）第三次挥手：Server发送一个FIN，用来关闭Server到Client的数据传送，Server进入LAST_ACK状态。
+    （4）第四次挥手：Client收到FIN后，Client进入TIME_WAIT状态，接着发送一个ACK给Server，确认序号为收到序号            +1，Server进入CLOSED状态，完成四次挥手。
+</code></pre>
+
+<p>24.#import和#include的区别，@class代表什么？</p>
+
+<pre><code>#import比起#include的好处就是不会引起交叉编译，#import 确定一个文件只能被导入一次，这使你在递归包含中不会出现问题；
+
+@class一般用于头文件中需要声明该类的某个实例变量的时候用到，在m文件中还是需要使用#import
+
+@class就是告诉编译器有这么一个类，至于类的定义是啥不知道
+
+@class还可以解决循环依赖的问题，例如A.h导入了B.h，而B.h导入了A.h，每一个头文件的编译都要让对象先编译成功才行。使 用@class就可以避免这种情况的发生   
+</code></pre>
+
+<p>25.Object-C的内存管理？</p>
+
+<pre><code>(1)如果使用 alloc、copy(mutableCopy)或者 retian 一个对象时,你就 有义务,向它发送一条release 或者 
+autorelease 消息。其他方法创建的对象,不 需要由你来管理内存。
+(2)向一个对象发送一条 autorelease 消息,这个对象并不会立即销毁, 而是将这个对象放入了自动释放池,待池子释放时,它会
+向池中每一个对象发送 一条 release 消息,以此来释放对象。
+(3)向一个对象发送 release 消息,并不意味着这个对象被销毁了,而是 当这个对象的引用计数为 0时,系统才会调用 dealloc 
+方法,释放该对象和对象 本身它所拥有的实例。
+</code></pre>
+
+<p>26.对绘图技术的理解？</p>
+
+<pre><code>[iOS绘图教程](http://www.cnblogs.com/xdream86/archive/2012/12/12/2814552.html)
+</code></pre>
+
+<p>27.Object-c的一些语言特性？</p>
+
+<pre><code>Objective-C 具有相当多的动态特性，常被提到的动态类型（Dynamic typing）、动态绑定（Dynamic Binding）、动态加载（Dynamic loading），以及基本的运行时特性。
+
+动态类型：即运行时再决定对象的类型。比如isKindOfClass/isMenmberOfClass方法
+动态绑定：即基于动态类型，在某个实例对象被确定后，其类型便被确定了。该对象对应的属性和响应的消息也被完全确定，这就是
+动态绑定。传统的函数一般在编译时就已经把参数信息和函数实现打包到编译后的源码当中，而在OC中最常使用的是消息机制。调
+用一个实例的方法，所做的是向该实例的指针发送消息，实例在收到消息后，从自身的实现中寻找响应这条消息的方法。
+动态绑定所做的，即是在实例所属类确定后，将某些属性和相应的方法绑定到实例上。这里所指的属性和方法当然包括了原来没有在
+类中实现的，而是在运行时才需要的新加入的实现。
+
+动态加载：比如 动态加载某些图片时；
+
+深入运行时特性，就是在iOS5之前，所有的UIViewController在使用默认的界面加载时(init或者
+initWithNibName:bundle:)，都会走-loadNibNamed:owner:options:。而因为我们无法拿到-
+loadNibNamed:owner:options的实现，因此对其重载是比较困难而且存在风险的。因此在做iPad版本的nib时，一个简单的办
+法是将所有的nib的命名方式统一，然后使用自己实现的新的类似-loadNibNamed:owner:options的方法将原方法替换掉，同时
+保证非iPad的设备还走原来的loadNibNamed:owner:options方法
+
+首先，第一个问题， 
+
+1》runtime实现的机制是什么,怎么用，一般用于干嘛？ 
+这个问题我就不跟大家绕弯子了，直接告诉大家， 
+runtime是一套比较底层的纯C语言API, 属于1个C语言库, 包含了很多底层的C语言API。 
+在我们平时编写的OC代码中, 程序运行过程时, 其实最终都是转成了runtime的C语言代码, runtime算是OC的幕后工作者 
+比如说，下面一个创建对象的方法中， 
+举例: 
+OC : 
+[[MJPerson alloc] init] 
+runtime : 
+objc_msgSend(objc_msgSend(“MJPerson” , “alloc”), “init”)
+
+第二个问题 
+runtime 用来干什么呢？？用在那些地方呢？怎么用呢？ 
+runtime是属于OC的底层, 可以进行一些非常底层的操作(用OC是无法现实的, 不好实现)
+
+在程序运行过程中, 动态创建一个类(比如KVO的底层实现)
+
+在程序运行过程中, 动态地为某个类添加属性\方法, 修改属性值\方法
+
+遍历一个类的所有成员变量(属性)\所有方法 
+例如：我们需要对一个类的属性进行归档解档的时候属性特别的多，这时候，我们就会写很多对应的代码，但是如果使用了  runtime就可以动态设置！ 
+例如，PYPerson.h的文件如下所示
+
+objc_msgSend : 给对象发送消息
+class_copyMethodList : 遍历某个类所有的方法
+class_copyIvarList : 遍历某个类所有的成员变量
+class_….. 
+ Ivar : 成员变量 
+Method : 成员方法 
+</code></pre>
+
+<p>28.你用的是什么代码管理工具？SVN？Git？</p>
+
+<pre><code>svn ，但是git 自己也用，也会搭建下博客
+</code></pre>
+
+<p>29.谈谈你理解的商业模式？facebook的盈利模式？</p>
+
+<pre><code>googlelead、有米 收益高点
+</code></pre>
+
+<p>30.网络，这块用的很多，只会用ASI是不够的，什么是http，什么是SOAP，什么REST，异步，同步区别，深入的还涉及到网络加密，数据缓存等等，这块水很深</p>
+
+<p>31.你发的app被打回过吗？有几种情况？</p>
+
+<pre><code>1.版本号相同
+2.有android版 介绍、字眼
+</code></pre>
+
+<p>32.你平时都看那些东西获取最新的iOS资讯和知识？</p>
+
+<pre><code>微博，twitter，facebook，或者medium，apple 官网，stack overflow ，google，reddit
+</code></pre>
+
+<p>33.自我介绍下？你为什么辞职？</p>
+
+<p>34.你还有什么想问的？</p>
+
+<p>35.iOS反射机制？运行时机制？</p>
+
+<pre><code>通过类名来生成相应的类的实例，NSClassFromString；
+
+获取类信息 id class = [[arrayobjectAtIndex:0]class];
+选择器
+类的动态创建
+要在代码中创建类，而不是通过静态的.h和.m文件定义类，可以使用Object C运行时库API（#import&lt;objc/runtime.h&gt;）
+Class newClz =objc_allocateClassPair([NSError class],”RuntimeErrorSubclass”,0);
+class_addMethod(newClz,@selector(retort), (IMP)ReportFunction, “v@:”);
+类的动态加载
+Class clz =NSClassFromString(@”MyClass”);
+方法的动态调用
+通过@selector关键字可以在一定程度上实现方法的动态调用。更动态的方式是通过Fundation框架的NSSelectorFromString 函数，可以直接从字符串获取一个选择器：
+</code></pre>
+
+<p>断点续传实现流程：</p>
+
+<pre><code>首次传输其流程如下
+
+1.服务端向客户端传递文件名称和文件长度
+2.跟据文件长度计算文件块数(文件分块传输请参照第二篇文章)
+3.客户端将传输的块数写入临时文件(做为断点值)
+4.若文件传输成功则删除临时文件
+
+首次传输失败后将按以下流程进行
+1.客户端从临时文件读取断点值并发送给服务端
+2.服务端与客户端将文件指针移至断点处
+3.从断点处传输文件
+</code></pre>
+
+<p>Http状态码：</p>
+
+<pre><code>200 - 服务器成功返回网页
+404 - 请求的网页不存在
+503 - 服务不可用
+
+400   （错误请求） 服务器不理解请求的语法。
+401   （未授权） 请求要求身份验证。 对于需要登录的网页，服务器可能返回此响应。
+403   （禁止） 服务器拒绝请求。
+
+500   （服务器内部错误）  服务器遇到错误，无法完成请求。
+
+408   （请求超时）  服务器等候请求时发生超时。
+
+301   （永久移动）  请求的网页已永久移动到新位置。 服务器返回此响应（对 GET 或 HEAD 请求的响应）时，会自动将请求者转到新位置。
+</code></pre>
+
+<p>加载顺序：</p>
+
+<pre><code>init、viewDidLoad、viewWillAppear、viewDidAppear、viewWillDisappear、  viewDidDisappear
+
+推送：APNS apple 推送服务器：
+
+第 一阶段：BeejiveIM服务器把要发送的消息、目的iPhone的标识打包，发给APNS。 
+第二阶段：APNS在自身的已注册Push服务 的iPhone列表中，查找有相应标识的iPhone，并把消息   发到iPhone。 
+第三阶段：iPhone把发来的消息传递给相应的应用程序， 并且按照设定弹出Push通知。 
+Push认证
+
+建立tls连接生成device token，然后返回给iphone，给app把device token 给服务器，服务器把消息 和device token 传给 apns，apns根据devicetoken 判断和那台iphone 建立连接，然后推送到各个iphone手机应用的push栏目里。
+</code></pre>
+
+<p>对象序列化：</p>
+
+<pre><code>我们定义的对象类，必须实现NSCoding和NSCopying协议 
+
+//读取归档文件  
+ NSData *data = [[NSMutableDataalloc] initWithContentsOfFile:myFile];  
+ NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiveralloc]  initForReadingWithData:data];  
+TestObj * test = [unarchiver decodeObjectForKey:@"data"];  
+[unarchiver finishDecoding];  
+[data release];  
+[unarchiver release];  
+
+//写入归档文件  
+NSMutableData *data1 = [[NSMutableDataalloc] init];  
+</code></pre>
+
+<p>   NSKeyedArchiver *archiver = [[NSKeyedArchiveralloc]  initForWritingWithMutableData:data1];</p>
+
+<pre><code>[archiver encodeObject:test forKey:@"data"];  
+[archiver finishEncoding];  
+[data writeToFile:myFile atomically:YES];  
+[data1 release];  
+[archiver release];  
+[test release];  
+</code></pre>
+
+<p>xml 和 json 的优缺点：</p>
+
+<pre><code>优点：
+
+（1）格式统一，符合标准；
+
+（2）容易与其他系统进行远程交互，数据传输比较方便。
+
+缺点：
+
+（1）XML文件庞大，文件格式复杂，传输占带宽；
+
+（2）服务器端和客户端都需要花费大量代码来解析XML，导致服务器端和客户端代码变得异常复杂且  不易维护；
+
+（3）客户端不同浏览器之间解析XML的方式不一致，需要重复编写很多代码；
+
+（4）服务器端和客户端解析XML花费较多的资源和时间。
+
+（2）【JSON】的优缺点
+
+优点：
+
+（1）数据格式比较简单，易于读写，格式都是压缩的，占用带宽小；
+
+（2）易于解析，客户端JavaScript可以简单的通过eval_r()进行JSON数据的读取；
+
+（3）支持多种语言，包括ActionScript, C, C#, ColdFusion, Java, JavaScript, Perl, PHP, Python, Ruby等服务器端语言，便于服务器端的解析；
+
+（4）在PHP世界，已经有PHP-JSON和JSON-PHP出现了，偏于PHP序列化后的程序直接调用，PHP服   务器端的对象、数组等能直接生成JSON格式，便于客户端的访问提取；
+
+（5）因为JSON格式能直接为服务器端代码使用，大大简化了服务器端和客户端的代码开发量，且完成 任务不变，并且易于维护。
+
+缺点：
+
+（1）没有XML格式这么推广的深入人心和喜用广泛，没有XML那么通用性；
+
+（2）JSON格式目前在Web Service中推广还属于初级阶段
+
+（3）【XML】和【JSON】的优缺点对比：
+
+（1）在可读性方面，JSON和XML的数据可读性基本相同。JSON和XML的可读性可谓不相上下，一边是建议的语法，一边是规范的标签形式，很难分出胜负。
+
+（2）在可扩展性方面，XML天生有很好的扩展性，JSON当然也有，没有什么是XML能扩展，JSON不能的。
+
+（3）在编码难度方面，XML有丰富的编码工具，比如Dom4j、JDom等，JSON也有json.org提供的工具，但是JSON的编码明显比XML容易许多，即使不借助工具也能写出JSON的代码，可是要写好XML就不太容易了。
+
+（4）在解码难度方面，XML的解析得考虑子节点父节点，让人头昏眼花，而JSON的解析难度几乎为0。这一点XML输的真是没话说。
+
+（5）在流行度方面，XML已经被业界广泛的使用，而JSON才刚刚开始，但是在Ajax这个特定的领域，未来的发展一定是XML让位于JSON。到时Ajax应该变成Ajaj(Asynchronous Javascript and JSON)了。
+
+（6） JSON和XML同样拥有丰富的解析手段。
+
+（7）JSON相对于XML来讲，数据的体积小。
+
+（8）JSON与JavaScript的交互更加方便。
+
+（9）JSON对数据的描述性比XML较差。
+
+（10）JSON的速度要远远快于XML。
+</code></pre>
+
+<h2>项目篇</h2>
+
+<p>1.讲讲你在大智慧做的事哪些工作？K线图是如何绘制的？</p>
+
+<p>2.兴业银行有几个人？你是负责主程？主要又做了哪些工作？谈谈你工作中遇到的问题？</p>
+
+<p>3.健康界你们开发了多长时间？现在做的事类网易模式？之前又是怎么个样式？登录注册怎么做的？分享这一块又是怎么做的</p>
+
+<p>4.兴业微祝福你们开发了多久，你一个人独立开发，开发中遇到了什么问题，一个项目的搭建的主要做了些什么？</p>
+
+<h2>高手进阶面试篇</h2>
+
+<p><a href="http://onevcat.com/2013/04/ios-interview/">十个iOS面试问题</a></p>
+
+<p><a href="http://blog.csdn.net/xunyn/article/details/11658261">iOS进阶面试题&mdash;&mdash;Block部分</a></p>
+
+<p><a href="http://www.raywenderlich.com/53962/ios-interview-questions">iOS Interview Questions</a></p>
+
+<p>1.你使用过Objective-C的运行时编程（Runtime Programming）么？如果使用过，你用它做了什么？你还能记得你所使用的相关的头文件或者某些方法的名称吗？</p>
+
+<p>2.你实现过多线程的Core Data么？NSPersistentStoreCoordinator，NSManagedObjectContext和NSManagedObject中的哪些需要在线程中创建或者传递？你是用什么样的策略来实现的？</p>
+
+<p>3.Core开头的系列的内容。是否使用过CoreAnimation和CoreGraphics。UI框架和CA，CG框架的联系是什么？分别用CA和CG做过些什么动画或者图像上的内容。（有需要的话还可以涉及Quartz的一些内容）</p>
+
+<p>4.是否使用过CoreText或者CoreImage等？如果使用过，请谈谈你使用CoreText或者CoreImage的体验。</p>
+
+<p>5.NSNotification和KVO的区别和用法是什么？什么时候应该使用通知，什么时候应该使用KVO，它们的实现上有什么区别吗？如果用protocol和delegate（或者delegate的Array）来实现类似的功能可能吗？如果可能，会有什么潜在的问题？如果不能，为什么？（虽然protocol和delegate这种东西面试已经面烂了&hellip;）</p>
+
+<p>6.你用过NSOperationQueue么？如果用过或者了解的话，你为什么要使用NSOperationQueue，实现了什么？请描述它和GCD的区别和类似的地方（提示：可以从两者的实现机制和适用范围来描述）。</p>
+
+<p>7.既然提到GCD，那么问一下在使用GCD以及block时要注意些什么？它们两是一回事儿么？block在ARC中和传统的MRC中的行为和用法有没有什么区别，需要注意些什么？</p>
+
+<p>8.您是否做过异步的网络处理和通讯方面的工作？如果有，能具体介绍一些实现策略么？</p>
+
+<p>9.对于Objective-C，你认为它最大的优点和最大的不足是什么？对于不足之处，现在有没有可用的方法绕过这些不足来实现需求。如果可以的话，你有没有考虑或者实践过重新实现OC的一些功能，如果有，具体会如何做？</p>
+
+<p>10.你实现过一个框架或者库以供别人使用么？如果有，请谈一谈构建框架或者库时候的经验；如果没有，请设想和设计框架的public的API，并指出大概需要如何做、需要注意一些什么方面，来使别人容易地使用你的框架。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/09/06/ios-block/">iOS-block</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-09-06T09:06:42+08:00" pubdate data-updated="true">Sep 6<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>关于对block的理解</h2>
+
+<p>block出来了那么久了，但是一直都是局限于苹果api核第三方库的使用，但是自己还是不知道在实际的项目中如何使用它，今天好好整整，做做笔记?</p>
+
+<h3>block 结构</h3>
+
+<p>左边的结构：</p>
+
+<pre><code>int(^BlockName)(int argc) 函数调用
+</code></pre>
+
+<p>右边的机构:</p>
+
+<pre><code>^(int argc){
+
+}
+
+^ 的标记就是说明他就是block
+
+此处如果不用__block的话，会报到
+     __block int sum = 0;
+
+__block使用说明是block variable，那么在block里面可以任意修改此变量的值
+
+int (^myblocks2)(int a ,int b) =  ^(int a,int b){
+    sum = a + b;
+    return  sum;
+
+};
+
+block也是一种类型，类似int而已
+</code></pre>
+
+<h3>block的实际用法</h3>
+
+<ul>
+<li><p>接网络请求的block自己再次封装的方法，把block作为方法的参数</p>
+
+<pre><code>  + (ASIHTTPRequest *)asyncGetRequest:(NSString *)url complete:(void (^)      (NSString *responseStr))complete failed:(void (^)(NSString      *errorMsg))failed;
+
+block可以用作一个方法参数使用，能更方便的取得回调数据
+
+block作为参数时使用格式是：需要把类型写在变量前面，然后加上小括号
+
+  -(void)objcMethod:(int(^)(int)square)
+</code></pre></li>
+<li><p>作为类的属性来使用</p>
+
+<pre><code>  if (completionHandler) {
+  completionHandler(self, barkCount);
+
+          }
+      }
+
+  @end
+
+  实现block 
+
+  FirstViewController *viewController = [[FirstViewController
+   alloc]initWithNibName:@"FirstViewController" bundle:nil];
+  BarkCallback myab = ^(FirstViewController *thisDog, int count) {
+  NSLog(@"count == %d", count);
+  };
+
+  viewController.completionHandler = myab;
+</code></pre></li>
+<li><p>block 作为全局变量来使用</p></li>
+<li>把block方法的参数来使用</li>
+</ul>
+
+
+<p> block在调用时会在主体上copy一份值如下:</p>
+
+<pre><code> {  
+int outA = 8;  
+int (^myPtr)(int) = ^(int a){ return outA + a;}; //block里面可以读取同一类型的   outA的值  
+
+outA = 5;  //在调用myPtr之前改变outA的值  
+int result = myPtr(3);  // result的值仍然是11，并不是8  
+NSLog(@"result=%d", result);  
+</code></pre>
+
+<p>}</p>
+
+<p>如果copy的是指针的话，它的值也可以在里面改变；</p>
+
+<p>Apple推荐block所使用的地方:</p>
+
+<pre><code>枚举——通过block获取枚举对象或控制枚举进程
+View动画——简单明了的方式规定动画
+排序——在block内写排序算法
+通知——当某事件发生后执行block内的代码
+错误处理——当错误发生时执行block代码
+完成处理——当方法执行完毕后执行block代码 类似回调
+GCD多线程——多线程控制，关于这个以后有机会再写
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/19/ios-autolayout/">iOS&#8212;AutoLayout</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-19T18:33:04+08:00" pubdate data-updated="true">Aug 19<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>iOS7 tutorial 自动布局学习笔记</h2>
+
+<p>1.UIViewController的UINavigationBarDelegate的这个方法，来选定navigationbar缩放的位置是否延伸上至状态栏;</p>
+
+<pre><code>- (UIBarPosition)positionForBar:(id &lt;UIBarPositioning&gt;)bar
+ {      return UIBarPositionTopAttached;      }
+</code></pre>
+
+<p>2.自动布局</p>
+
+<pre><code>即： 不需要在设置view.frame,只需要设置constraint即可；
+</code></pre>
+
+<ul>
+<li><p>什么是约束？</p>
+
+<p>  约束通常是两个view之间额关系，通常是view 和 它的父view；你必须要记住一点就是：必须要有足够的Constraint以保证position和size可以计算的出来;</p></li>
+</ul>
+
+
+<p>练习使用:</p>
+
+<pre><code>1.在 file inspector 里面打开 UseAutolayout
+
+2.Remember that with Auto Layout you may no longer set the frame of a view directly.
+
+3.点击Pin,点击四周使之成为红色;
+4.如果你在view上添加constraint，ib会自动添加一个固定的position和size
+</code></pre>
+
+<p>添加Constraint 有两种方法:</p>
+
+<pre><code>1.点击view ，添加pin 
+2.点击view ，按住ctrl，连接相邻的view
+
+3.包含：Leading Space 、 Trailling Space 、 Bottom Space
+4.在使用 toolbar 和navigationbar的时候，选中 他们，然后按住ctrl 连接top Layout guide和bottom Layout guide 。。即可
+</code></pre>
+
+<p>3.所有的controller都有一个Adjust Scroll View Insets 属性来使得scrollview或者tableview的内容不会被任何bar所遮挡,不过这只对那些viewcontroller的主view是tableview的或者scrollview有效;
+因此有时候你需要手动调整content inset来适配;</p>
+
+<p>4.align 可以选择为多个控件的左右对齐，</p>
+
+<p>5.某种控件，类似label和button，都是根据内容来确定它自身的大小的，label知道了自身text有多少和font有多大，就知道autolayout需要有多大，这就是instrinsic content size，在ib中你根本不需要给他们精确的size</p>
+
+<pre><code>[cell.contentView systemLayoutSizeFittingSize:      UILayoutFittingCompressedSize].height + 1.0f    
+</code></pre>
+
+<p>6.如果你的view里面有多个instrinsic content view ，比如button，label 或者imageview
+注意</p>
+
+<pre><code>content hugging priority：阻止变大的力度
+content compression resistance priority：阻止变小的力度
+</code></pre>
+
+<p>7.主动让其view下移一段距离：</p>
+
+<pre><code>self.tableview.contentInset = UIEdgeInsets(64,0,44,0)
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/18/pythonbi-ji/">Python笔记</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-18T20:35:42+08:00" pubdate data-updated="true">Aug 18<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>python教程:</p>
+
+<p>终端里输入python启动进入python交互式环境
+输入exit()退出环境</p>
+
+<p>进入文件坐在位置，然后运行 python xx.py就可以运行该文件了
+print ‘ xxx’,’xxx’,’xxx&#8217;输出一连串的字符串
+ print &lsquo;the quick brown fox&rsquo;,&lsquo;jumps over&rsquo;,&lsquo;the lazy dog’
+the quick brown fox jumps over the lazy dog
+raw_input:可以让用户输入字符串，并存放到一个变量里</p>
+
+<p>name = raw_input(&lsquo;please enter your name: &rsquo;)
+根据预先提示，输入</p>
+
+<p>  #是用来注释内容的：</p>
+
+<p>python 是对大小写敏感的;</p>
+
+<p>数据类型表示：</p>
+
+<p>整数：和我们平常使用的数字一模一样</p>
+
+<p>浮点数:</p>
+
+<p>字符串: “xxx”表示</p>
+
+<p>‘xxx’:表示xxx的三个字符;</p>
+
+<p>转义字符\ 包含’和 ’’时使用，在字符前面</p>
+
+<p>‘I\m \”OK\”!’</p>
+
+<p>\转移字符 \n换行符  \t制表符 \表示\</p>
+
+<p>print &lsquo;’&#8217;line1</p>
+
+<p>&hellip; line2</p>
+
+<p>&hellip; line3’’’ 用来表示多行字符</p>
+
+<p>在前面加入r可以使其缩进</p>
+
+<p>python里有一个特殊的值，用None表示,None不能理解为0,因为0是有意义的，None是一个特殊的空值</p>
+
+<p>pythond 的变量名不能应数字开头;</p>
+
+<p>同一个变量可以反复赋值，并且用不同数据类型赋值</p>
+
+<p>字符编码问题:</p>
+
+<p>UTF-8是一种可变长编码,UTF-8编码有一个额外的好处，就是ASCII编码实际上可以被看成是UTF-8编码的一部分，所以，大量只支持ASCII编码的历史遗留软件可以在UTF-8编码下继续工作。</p>
+
+<p>ord(‘A’)将字符串转为数字</p>
+
+<p>chr(’65&#8217;)将数字转为字符串</p>
+
+<p>print u’中文’ unicode形式表示</p>
+
+<p>但你的Python源代码包含中文时，务必保存为UTF-8编码.</p>
+
+<p>当Python解释器读取源代码时，为了让它按UTF-8编码读取，我们通常在文件开头写上这两行：</p>
+
+<p>转码：
+  #!/usr/bin/env python
+  # &ndash;<em>&ndash; coding: utf-8 &ndash;</em>&ndash;
+去除list列表中最后一个元素 classmates[-1]
+添加元素：classmates.append(‘Adam’)
+插入元素:classmates.insert(1,’jack’)
+删除末尾的元素:classmate.pop()</p>
+
+<p>tuple 元组：不可变</p>
+
+<p>tuple和list数组类似，但是不可增删改查；
+只有一个元素的时候在后面加入，号来消除歧义
+tuple如果里面的是list元素的话其实也可以更改；</p>
+
+<p>for x in ….循环语句</p>
+
+<p>range(x)生成0~x-1的数字</p>
+
+<h5>字典和set</h5>
+
+<p>通过dict提供的get方法，如果key不存在，可以返回None，或者自己指定的value：
+d.get(&lsquo;Thomas&rsquo;,-1)
+删除一个key，value也会删除
+d.pop(&lsquo;Bob&rsquo;)
+牢记第一条:dict的key必须是不可变的对象</p>
+
+<p>set 和dict类似，也是key的集合，但不存储value，由于key不能重复，所以在set中，没有重复的key，s可以重复添加，但是没有效果.</p>
+
+<p>set可以看成数学意义上的无序和无重复元素的集合，因此，两个set可以做数学意义上的交集、并集等操作：
+set和dict里面同样不能放入可变对象;</p>
+
+<p>当我们调用a.replace(&lsquo;a&rsquo;, &lsquo;A&rsquo;)时，实际上调用方法replace是作用在字符串对象&#8217;abc&#8217;上的，而这个方法虽然名字叫replace，但却没有改变字符串&#8217;abc&#8217;的内容。相反，replace方法创建了一个新字符串&#8217;Abc&#8217;并返回，如果我们用变量b指向该新字符串，就容易理解了，变量a仍指向原有的字符串&#8217;abc&#8217;，但变量b却指向新字符串&#8217;Abc&#8217;了：</p>
+
+<p>对于不变对象来说，调用对象自身的任意方法，也不会改变该对象自身的内容。</p>
+
+<h4>函数</h4>
+
+<p>help(abs):查看abs函数的帮助信息
+函数返回多个值其实返回的是元组
+定义默认参数时必须指向不可变对象</p>
+
+<p>对于任意函数，都可以通过类似func(*argc,**kw)的形式调用它，无论它的参数是如何定义的。</p>
+
+<p>*args是可变参数，args接收的是一个tuple
+**kw是关键字参数，kw接收的是一个dict</p>
+
+<h4>生成器</h4>
+
+<p>只要把一个列表生成式的[]改成()</p>
+
+<blockquote><blockquote><blockquote><p>L = [x * x for x in range(10)]</p>
+
+<p>g = (x * x for x in range(10))</p></blockquote></blockquote></blockquote>
+
+<p>generator保存的是算法，每次调用next()，就计算出下一个元素的值，直到计算到最后一个元素，没有更多的元素时，抛出StopIteration的错误。</p>
+
+<h3>正则表达式</h3>
+
+<p>\d 可以匹配一个数字，\w可以匹配一个数字或字母。
+.可以匹配任意字符，*表达任意个字符（包括0个）
++表示至少一个字符，用？表示0个或1个字符
+用{n}表示n个字符，用{n,m}表示n-m个字符：
+\s可以匹配一个空格（也包括Tab等空白符）
+‘-’是特殊字符，在正则表达式中，要用&#8217;\&lsquo;转义
+特殊字符都用‘\’转义</p>
+
+<p>A|B 可以匹配A或B，
+^表示行的开头，^\d必须以数字开头
+$表示行的结束，\d$表示必须以数字结束
+要做更精确地匹配，可以用[]表示范围</p>
+
+<p>利用正则表达式来切割字符串
+re.split(r&#8217;[\s\,\;]+&lsquo;,&#8217;a,b;;c  d&rsquo;)</p>
+
+<p>分组：
+用()表示的就是要提取的分组(Group)
+group(0)永远是原始字符串，group(1)第一个字符串，group(2)第二个字符串</p>
+
+<p>正则匹配默认是贪婪匹配，也就是尽可能匹配多的字符.
+\d+采用贪婪匹配
+\d?采用非贪婪匹配</p>
+
+<h3>常见内建模块</h3>
+
+<p>由于标准的Base64编码后可能出现字符+和/，在URL中就不能直接作为参数，所以又有一种&#8221;url safe&#8221;的base64编码，其实就是把字符+和/分别变成-和<em>：
+base64.b64encode(&lsquo;xxxxxx&rsquo;)
+base64.b64decode(&lsquo;xxxxxx&rsquo;)
+由于标准的Base64编码后可能出现字符+和/，在URL中就不能直接作为参数，所以又有一种&#8221;url safe&#8221;的base64编码，其实就是把字符+和/分别变成-和</em>:
+base64.urlsafe_b64encode(&lsquo;&rsquo;)
+base64.urlsafe_b64decode(&lsquo;&rsquo;)</p>
+
+<p>=字符也可能出现在Base64编码中，但=用在URL、Cookie里面会造成歧义，所以很多时候Base64后的=符号去掉</p>
+
+<p>因为Base64是把3个字节变为4个字节，所以，Base64编码的长度永远是4的倍数，因此，需要加上=把Base64字符串的长度变为4的倍数，就可以正常解码了</p>
+
+<p>Base64是一种任意二进制到文本字符串的编码方法，常用于在URL、Cookie、网页中传输少量二进制数据</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/06/ru-he-ti-gao-ios/">如何提高iOS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-06T00:15:27+08:00" pubdate data-updated="true">Aug 6<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>阅读博客</p>
+
+<p>在现在这个碎片化阅读流行的年代，博客的风头早已被微博盖过。而我却坚持写作博客，并且大量地阅读同行的iOS开发博客。博客的文章长度通常在3000字左右，许多iOS开发知识都至少需要这样的篇幅才能完整地讲解清楚。并且博客相对于书籍来说，并没有较长的出版发行时间，所以阅读博客对于获取最新的iOS开发知识有着非常良好的效果。</p>
+
+<p>我自己精心整理了国内40多位iOS开发<a href="https://github.com/tangqiaoboy/iOSBlogCN">iOS开发博主的博客地址列表</a>，希望大家都能培养起阅读博客的习惯。</p>
+
+<p>国外也有很多优秀的iOS开发博客，他们整体质量比中文的博客更高，以下是一些推荐的博客地址列表：</p>
+
+<p>博客名    博客地址</p>
+
+<ul>
+<li><a href="http://www.objc.io/">objc.io</a></li>
+<li><a href="http://www.raywenderlich.com">Ray Wenderlich</a></li>
+<li><a href="http://iosdevelopertips.com/">iOS Developer Tips</a></li>
+<li><a href="http://iosdevweekly.com/">iOS Dev Weekly</a></li>
+<li><a href="http://nshipster.com/">NSHipster</a></li>
+<li><a href="http://ciechanowski.me">Bartosz Ciechanowski</a></li>
+<li><a href="http://blog.bignerdranch.com">Big Nerd Ranch</a></li>
+<li><a href="http://nilsou.com/">Nils Hayat</a></li>
+</ul>
+
+
+<p>另外，使用博客RSS聚合工具（例如<a href="http://www.feedly.com/">Feedly</a>可以获得更好的博客阅读体验。手机上也有很多优秀的博客阅读工具（我使用的是Newsify）。合理地使用这些工具也可以将你在地铁上、睡觉前等碎片时间充分利用上。</p>
+
+<p>读书</p>
+
+<p>博客的内容通常只能详细讲解一个知识点，而书籍则能成体系地介绍整个知识树。相比国外，中国的书籍售价相当便宜，所以这其实是一个非常划算的提高的方式。建议大家每年至少坚持读完1本高质量的iOS开发书籍。</p>
+
+<p>去年出版的《iOS 7 Programming Pushing the Limits》 以及  《Objective-C高级编程：iOS与OS X多线程和内存管理》 都算是不错的进阶方面的读物。顺便打个广告，我自己也在写一本iOS进阶方面的图书，年底前应该能上市。</p>
+
+<p>看WWDC视频</p>
+
+<p>由于iOS开发在快速发展，每年苹果都会给我们带来很多新的知识。而对于这些知识，第一手的资料就是WWDC的视频。</p>
+
+<p>通常情况下，一个iOS开发的新知识首先会在WWDC上被苹果公开，然后3个月左右，会有国内外的博客介绍这些知识，再过半年左右，会有国外的图书介绍这些知识。所以如果想尽早地了解这些知识，那么只有通过WWDC的视频。</p>
+
+<p>现在每年的WWDC视频都会在会议过程中逐步放出，重要的视频会带有英文字幕。坚持阅读这些视频不但可以获得最新的iOS开发知识，还可以提高英文听力水平。</p>
+
+<p>看苹果的官方文档</p>
+
+<p>苹果的官方文档相当详尽，对于不熟悉的API，阅读官方文档也是最直接有效地方式。</p>
+
+<p>苹果的文档比较海量，适合选一些重点来阅读，比如人机交互指南就是必读的，而其它的内容可以遇到的时候作为重点资源来查阅。</p>
+
+<p>看开源项目的代码</p>
+
+<p>大家一定有这样的感受，很多时候用文字讲解半天，还不如写几行代码来得直观。阅读优秀的开源项目代码，不但可以学习到iOS开发本身的基本知识，还能学习到设计模式等软件架构上的知识。</p>
+
+<p>如果读者能够参与到开源项目的开发中，则能进一步提高自己的能力。</p>
+
+<p>多写代码，多思考</p>
+
+<p>知识的积累离不开实践和总结，我认为iOS代码量如果没有超过10万行，是不能称得上熟悉iOS开发的。某些在校的学生，仅仅做了几个C++的大作业，就在求职简历里面写上“精通C++”，则真是让人哭笑不得。</p>
+
+<p>在多写代码的同时，我们也要注意不要”重复造轮子”，尽量保证每次写的代码都能具有复用性。在代码结构因为业务需求需要变更时，及时重构，在不要留下技术债的同时，我们也要多思考如何设计应用架构，能够保证满足灵活多变的产品需求。</p>
+
+<p>在多次重构和思考的过程中，我们就会慢慢积累出一类问题的“最佳实践”方式，成为自己宝贵的经验。</p>
+
+<p>多和同行交流</p>
+
+<p>有些时候遇到一些难解的技术问题，和同行的几句交流就可能让你茅塞顿开。。另外常见的技术问题通常都有人以前遇到过，简单指导几句就能让你一下子找到正确的解决方向。</p>
+
+<p>国内开发者之间的交流，可以通过论坛，微博，QQ群等方式来进行。另外各大公司有时候会办技术沙龙，这也是一个认识同行的好机会。</p>
+
+<p>需要特别提醒的是，和国内开发者之前交流要注意讨论质量，有一些论坛和QQ群讨论质量相当低下，提的问题都是能通过简单Google获得的，这种社区一定要远离，以提高自己的沟通效率。</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/04/ios-high-quality-article-collection/">iOS高质量实用性文章收录</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-04T13:49:48+08:00" pubdate data-updated="true">Aug 4<sup>th</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>8.4~8.10</h2>
+
+<ul>
+<li><a href="http://www.cocoachina.com/newbie/basic/2014/0731/9284.html">高效使用你的xcode</a></li>
+<li><a href="http://www.justinyan.me/post/1624">理解Objective-C Runtime</a></li>
+<li><a href="http://fauxpasapp.com">Faux Pas&mdash;&mdash;检查iOS或者Mac应用的Xcode工程并给出潜在bug的警告的神器</a></li>
+<li><a href="http://blog.sunnyxx.com/2014/08/02/objc-weird-code/">objc非主流代码技巧</a></li>
+<li><a href="http://www.devtalking.com/articles/files-and-initialization/">Swift中的文件和初始化</a></li>
+<li><a href="http://stackoverflow.com/questions/2615378/how-to-use-git-properly-with-xcode">how to use git properly with xcode</a></li>
+<li><a href="http://onevcat.com/2014/08/notification-today-widget/">iOS 通知中心扩展制作入门</a></li>
+<li><a href="http://zhuanlan.zhihu.com/wooyun/19810488">逆向工程入门</a></li>
+</ul>
+
+
+<h2>8.11~8.17</h2>
+
+<ul>
+<li><a href="http://blog.csdn.net/colorapp/article/details/38422073#0-tsina-1-61933-397232819ff9a47a7b7e80a40613cfe1"> iOS AutoLayout学习总结</a></li>
+<li><a href="http://docs.polymerchina.org/docs/start/tutorial/intro.html">Polymer 最佳入门指南</a></li>
+<li><a href="http://blog.csdn.net/lizhongfu2013/article/details/12648633">IOS7开发～Xcode5制作framework</a></li>
+<li><a href="http://wangzz.github.io/blog/2014/08/08/ping-mu-xuan-zhuan-xue-xi-bi-ji/">iOS屏幕旋转学习笔记</a></li>
+<li><a href="http://wangzz.github.io/blog/2014/06/12/wwdc2014zhi-iosshi-yong-dong-tai-ku/">WWDC2014之iOS使用动态库</a></li>
+<li><a href="https://github.com/jakubroztocil/httpie">一个甩curl几条街的命令行http客户端</a></li>
+<li><a href="http://www.imooc.com/learn/149">Swift开发视频</a>     <a href="https://github.com/JakeLin/SwiftWeather">Weather-app源码</a></li>
+<li><a href="https://github.com/ShinobiControls/iOS8-day-by-day">一个不错的iOS8 学习repo . iOS8 Day by Day. Day Day Up,You know</a></li>
+</ul>
+
+
+<h2>8.18~8.24</h2>
+
+<ul>
+<li><a href="http://anandology.com/python-practice-book/index.html">Python实战</a></li>
+</ul>
+
+
+<h2>9.5~</h2>
+
+<ul>
+<li><a href="http://www.quora.com/What-are-the-top-10-websites-computer-science-students-must-visit">What are the top 10 websites computer science students must visit?</a></li>
+<li><a href="http://code.csdn.net/news/2821086">速来膜拜！20位活跃在Github上的国内技术大牛</a></li>
+<li><a href="http://www.iwangke.me/2014/09/04/fuck-your-ios-teamates/">iOS应用开发之十大坑队友</a></li>
+</ul>
+
+
+<h2>iOS 插件</h2>
+
+<ul>
+<li>(字符串转义插件)[<a href="https://github.com/holtwick/HOStringSense-for-Xcode">https://github.com/holtwick/HOStringSense-for-Xcode</a>]</li>
+</ul>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/objective-c-art-conditional-statement-name-and-so-on/">Objective-C 编程艺术:条件语句、命名</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T02:20:10+08:00" pubdate data-updated="true">Aug 3<sup>rd</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>条件语句</h2>
+
+<p>条件语句尽量都加上括号来写以避免错误产生，尽管它可以不需要括号。</p>
+
+<h4>优先：</h4>
+
+<pre><code>    if (!error) {
+        return success;
+    }
+</code></pre>
+
+<h4>避免：</h4>
+
+<pre><code>    if (!error)
+        return success;
+
+    或者
+
+    if (!error) return success;
+</code></pre>
+
+<p>今年2月，著名的goto fail事件在苹果的SSL/TLS实现中发现了，这个bug的出现是因为在if语句中重复使用了goto 语句，在父类语句中如果包裹if 的话可以避免这个问题产生</p>
+
+<p>代码摘录：</p>
+
+<pre><code>    static OSStatus
+SLVerifySignedServerKeyExchange(SSLContext *ctx, bool isRsa, SSLBuffer signedParams,
+                             uint8_t *signature, UInt16 signatureLen)
+{
+        OSStatus        err;
+        ...
+
+        if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;serverRandom)) != 0)
+            goto fail;
+        if ((err = SSLHashSHA1.update(&amp;hashCtx, &amp;signedParams)) != 0)
+            goto fail;
+            goto fail;
+        if ((err = SSLHashSHA1.final(&amp;hashCtx, &amp;hashOut)) != 0)
+            goto fail;
+        ...
+
+        fail:
+            SSLFreeBuffer(&amp;signedHashes);
+            SSLFreeBuffer(&amp;hashCtx);
+            return err;
+}
+</code></pre>
+
+<p>很明显，代码中有2个goto fail，我们非常不希望产生类似的bug，另外，这种bug往往与所有的条件语句息息相关，因此也更容易发现；</p>
+
+<h3>Yoda conditions</h3>
+
+<p>尽量避免Yoda条件语句的使用，当一个常量和一个变量比较的时候我们通常会使用Yoda条件判断，就像我们说“如果蓝色的是天空”或者“如果高就是男人”来替换“如果天空是蓝色的”或者“如果男人就是个子高”</p>
+
+<p>优先：</p>
+
+<pre><code>if ([myValue isEqual:@42]) { ...
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>if ([@42 isEqual:myValue]) { ...
+</code></pre>
+
+<h3>nil 和 BOOL 的检查</h3>
+
+<p>类似于 Yoda 条件语句，nil判断一致处于争论当中，一些比较有名的库常常是使用如下方式检查是否为nil：</p>
+
+<pre><code>if (nil == myValue){...
+</code></pre>
+
+<p>可能有人会认为nil这是一个没有值或者类似于Yoda condition 中的常量，之说以这样做，是因为可以避免产生一些难调试的bug，看看如下的代码:</p>
+
+<pre><code>if(myValue == nil){...
+</code></pre>
+
+<p>输入时往往容易产生这种状况:</p>
+
+<pre><code>if(myValue = nil){...
+</code></pre>
+
+<p>这将是一种有效的赋值，如果你是一名有经验的程序员，你会发现这个bug很难调试(这很有可能伴随着一些相关的副作用),但是当nil在左边的时候，这种情形很难再发生，据说如果程序员使用这种方法，她/他很早就明白了这种做法的意图，因此再次输入时候特别容易检测出这个问题。</p>
+
+<p>不仅仅如此，为了避免所有的这些使用混乱得方法同时让人根本没有时间去怀疑，最好还是用检查标记。因为 nil 相当于 no，所以根本没有必要在条件语句中比较他们。同样，也不需要比较yes，因为yes 等价于 1 同时 bool 变量可以转换为8位因为 bool 其实是char变量</p>
+
+<p>优先:</p>
+
+<pre><code>if (someObject) {...
+if (![someObject boolValue]){...
+if (!someObject){...
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>if(someObject == Yes) {...
+if(myRawValue == Yes) {...
+if ([]someObject boolValue] == NO){...
+</code></pre>
+
+<h3>黄金路径</h3>
+
+<p>当我们编写条件语句时，左边的语句应该是 黄金搬的或者是快乐搬的路径，意思是说，不要构建if条件语句的温床，多个返回值的还是可以的，这可以避免随之增长的复杂性同时可以使得代码的可读性更高因为这个方法最重要的部分并不是在构建分支的温床，但是你可以编写一份类似的及处理相关的代码.</p>
+
+<p>优先:</p>
+
+<pre><code>    -(void)someMethod{
+    if (![someOther boolValue]){
+        return;
+    }
+    //do someting important
+    }       
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>    -(void)someMethod {
+        if ([]someOther boolValue])
+        //do something important
+    }
+    }
+</code></pre>
+
+<h3>复杂条件语句</h3>
+
+<p>当你有一个复杂的语句判断时，尤其在if语句中，你应该分散他们并且赋给他们一个bool变量来使得逻辑判断更加清晰</p>
+
+<pre><code>BOOL nameContainsSwift  = [sessionName      containsString:@"Swift"];
+BOOL isCurrentYear      = [sessionDateCompontents year] == 2014;
+BOOL isSwiftSession     = nameContainsSwift &amp;&amp; isCurrentYear;
+
+if (isSwiftSession) {
+// Do something very cool
+}
+</code></pre>
+
+<h3>三元运算</h3>
+
+<p>三元运算？的使用往往是因为它使得代码更加清晰和整洁，简单的条件判断通常是可以估算的，在if语句中或者转换的实例变量，估算多重条件语句时通常是更易理解的。</p>
+
+<p>优先:</p>
+
+<pre><code>    result = a &gt; b ? x : y;
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>    result = a &gt; b ? x = c &gt; d ? c : d : y;
+</code></pre>
+
+<p>优先:</p>
+
+<pre><code>    result = object ? : [self createObject]
+</code></pre>
+
+<p>避免:</p>
+
+<pre><code>    result = object ?object : [self createObject];
+</code></pre>
+
+<h3>error 处理</h3>
+
+<p>如果方法返回的是一个error 参数时 ，检查返回值，而不是error变量</p>
+
+<pre><code>NSError *error = nil;
+if(![self trySomethingWithError:&amp;error]){
+        //Handle Error
+}
+</code></pre>
+
+<p>更重要的是，苹果的一些api会写入一些垃圾值给error参数(if non-NULL)在成功的情况下，所以检测error容易导致错误的赋值（和紧随的崩溃）</p>
+
+<h2>分情形 语句</h2>
+
+<p>对于分情形语句括号并不是必须的，除非编译器强制需要。当一个情形里包含代码不止一行时，括号是必须添加的。</p>
+
+<pre><code>objective-c
+    switch (condition) {
+        case 1:
+    // ...
+    break;
+case 2: {
+    // ...
+    // 多行代码时最好加上括号
+    break;
+   }
+case 3:
+    // ...
+    break;
+default: 
+    // ...
+    break;
+}
+</code></pre>
+
+<p>当同样的代码需要在多种情况下使用时，你应该使用fall-through。fall-through 就是移除某一个 break语句，因此允许执行到下一种情形。</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>objective-c
+</span><span class='line'>switch (condition) {
+</span><span class='line'>    case 1:
+</span><span class='line'>    case 2:
+</span><span class='line'>        // code executed for values 1 and 2
+</span><span class='line'>        break;
+</span><span class='line'>    default: 
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>在switch语句中使用枚举类型时，‘default’语句并不是必须的，例如:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>objective-c
+</span><span class='line'>switch (menuType) {
+</span><span class='line'>    case ZOCEnumNone:
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>    case ZOCEnumValue1:
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>    case ZOCEnumValue2:
+</span><span class='line'>        // ...
+</span><span class='line'>        break;
+</span><span class='line'>}</span></code></pre></td></tr></table></div></figure>
+
+
+<p>而且，尽量避免使用default 情形语句，如果有一个新值加到枚举中时，程序员马上收到一个警告的通知。</p>
+
+<h3>枚举类型</h3>
+
+<p>当我们使用枚举时，推荐使用新的固定的基本类型来定义 因为它具有强类型检查和代码完整性，sdk现在已经包含了一个 macro 来 使得使用 fixed underlying 类型更加便利 &ndash;<code>NS_ENUM()</code></p>
+
+<p>例如:</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>objective-c
+</span><span class='line'>typedef NS_ENUM(NSUInteger, ZOCMachineState) {
+</span><span class='line'>    ZOCMachineStateNone,
+</span><span class='line'>    ZOCMachineStateIdle,
+</span><span class='line'>    ZOCMachineStateRunning,
+</span><span class='line'>    ZOCMachineStatePaused
+</span><span class='line'>};</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>命名</h1>
+
+<h2>通用规范</h2>
+
+<p>苹果命名规范尽可能遵循<a href="https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/MemoryMgmt/Articles/MemoryMgmt.html">memory management rules</a> (<a href="http://stackoverflow.com/a/2865194/340508">NARC</a>)</p>
+
+<p>长，描述性强的方法名和变量名 当然是最好的。</p>
+
+<p>优先：</p>
+
+<pre><code>```
+objective-c
+UIButton *settingsButton;
+```
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>```objective-c
+    UIButton *setBut;
+```
+</code></pre>
+
+<h2>常量</h2>
+
+<p>常量应该遵守驼峰规则并且提前确认类名使得更加清晰。</p>
+
+<p>优先：</p>
+
+<pre><code>static const NSTimeInterval ZOCSignInViewControllerFadeOutAnimationDuration = 0.4;
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>static const NSTimeInterval fadeOutTime = 0.4;
+</code></pre>
+
+<p>常量通常更多是使用在字符串变量或者数字变量，因为这样就允许更容易使用经常需要使用的变量，同时也可以更快速的区修改和查找。常量应该声明成 <code>static</code> 静态变量而不是<code>#define</code>除非明确要求必须使用宏。</p>
+
+<p>优先：</p>
+
+<pre><code>static NSString * const ZOCCacheControllerDidClearCacheNotification = @"ZOCCacheControllerDidClearCacheNotification";
+static const CGFloat ZOCImageThumbnailHeight = 50.0f;
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>#define CompanyName @"Apple Inc."
+#define magicNumber 42
+</code></pre>
+
+<p>常量显示在外面时 ，应该在接口文件里使用如下方式：</p>
+
+<pre><code>extern NSString *const ZOCCacheControllerDidClearCacheNotification;
+</code></pre>
+
+<p>然而 之前赋值的常量语句 应该写在 实现文件里</p>
+
+<p>你只需要使用命名空间使得常量是公共的，尽管在实现文件里使用的常量需要遵循一种模式，但是根本不需要遵守这个规则。</p>
+
+<h2>方法</h2>
+
+<p>在方法签名中，在方法类型后面应该需要一个空格(<code>-</code>/<code>+</code> symbol),在方法片段中最好应该有一个空格(遵循苹果的风格)。方法中通常包含一个关键字并且通过这个关键字来描述后面的参数。</p>
+
+<p>and关键字的使用还是避免使用，多个参数中他应该避免使用 而是使用如下<code>initWithWidth:height:</code></p>
+
+<p>优先：</p>
+
+<pre><code>- (void)setExampleText:(NSString *)text image:(UIImage *)image;
+- (void)sendAction:(SEL)aSelector to:(id)anObject forAllCells:(BOOL)flag;
+- (id)viewWithTag:(NSInteger)tag;
+- (instancetype)initWithWidth:(CGFloat)width height:(CGFloat)height;
+</code></pre>
+
+<p>避免：</p>
+
+<pre><code>- (void)setT:(NSString *)text i:(UIImage *)image;
+- (void)sendAction:(SEL)aSelector :(id)anObject :(BOOL)flag;
+- (id)taggedView:(NSInteger)tag;
+- (instancetype)initWithWidth:(CGFloat)width andHeight:(CGFloat)height;
+- (instancetype)initWith:(int)width and:(int)height;  // Never do this.
+</code></pre>
+
+<h2>语法</h2>
+
+<p>当我们使用不可变实例对象时，<code>NSString</code>, <code>NSDictionary</code>, <code>NSArray</code>, and <code>NSNumber</code>应该要用到。注意：<code>nil</code>值不能传到<code>NSArray</code> 和 <code>NSDictionary</code> 因为会使得程序导致崩溃。</p>
+
+<p>例如：</p>
+
+<pre><code>NSArray *names = @[@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul"];
+NSDictionary *productManagers = @{@"iPhone" : @"Kate", @"iPad" : @"Kamal", @"Mobile Web" : @"Bill"};
+NSNumber *shouldUseLiterals = @YES;
+NSNumber *buildingZIPCode = @10018;
+</code></pre>
+
+<p>禁止：</p>
+
+<pre><code>NSArray *names = [NSArray arrayWithObjects:@"Brian", @"Matt", @"Chris", @"Alex", @"Steve", @"Paul", nil];
+NSDictionary *productManagers = [NSDictionary dictionaryWithObjectsAndKeys: @"Kate", @"iPhone", @"Kamal", @"iPad", @"Bill", @"Mobile Web", nil];
+NSNumber *shouldUseLiterals = [NSNumber numberWithBool:YES];
+NSNumber *buildingZIPCode = [NSNumber numberWithInteger:10018];
+</code></pre>
+
+<p>对于可变部分的这些类我们推荐，明确这些类的使用比如<code>NSMutableArray</code>, <code>NSMutableString</code></p>
+
+<p>以下使用方式应该避免：</p>
+
+<pre><code>NSMutableArray *aMutableArray = [@[] mutableCopy];
+</code></pre>
+
+<p>问题是先前的标记不仅有效而且具有可读性。
+在效率上，不必要的不可变对象创建并且马上又释放了，这样就不会降低你的app的性能(除非方法在这里频繁的被调用)，但是在这里根本没有理由来做些来保存一些。
+在可读性上，我们可以发现两个问题:首先，当我们浏览代码时，会把<code>@[]</code>与<code>NSArray</code>立马联系到一起，但是在这种情况下，你应该停止并且深入的检查。另一个就是，一些缺乏经验的人将会看到你的代码在他的角度上他无法区分可变和不可变对象，他对创建深拷贝并不熟悉(很明显我们并不是建议知识并不是必须的)，反过来，这并不是弯曲错误但是我们应该更多考虑到代码的可用性(包含代码的阅读性)</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/03/objective-c-art-class/">Objective-C 编程艺术: 类</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-03T02:06:18+08:00" pubdate data-updated="true">Aug 3<sup>rd</sup>, 2014</time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>类</h1>
+
+<h2>类名</h2>
+
+<p>你最好在类前面加入3个大写字母的作为类的前缀（苹果自带的是2个字母），这个看似奇怪的做法确是弥补了没有命名空间的缺憾，在模型对象中，一些开发者却并不遵循这个做法（尤其是core data 里的object），不过在Core Data objects 中，我们仍然建议严格遵循这个规范，因为你很有可能需要合并来自第三方库的Manage Object Model 。
+也许你早已注意到，这本书的类的前缀就是<code>ZOC</code></p>
+
+<p>在我们选择如何个类命名的时候，你可以试着这样做:
+当你创建一个子类的时候，你应该把详细名字放在类名的前缀和父类名之间。这里有一个很好的例子:</p>
+
+<p>如果你有一个类名叫做<code>ZOCNetworkClient</code>,子类名叫做<code>ZOCTwitterNetworkClient</code>可能会更好，（记住&#8221;Twitter&#8221;在&#8221;ZOC&#8221;和&#8221;NetworkClient&#8221;之间）;同样，遵照这个规则，<code>UIViewController</code>的子类叫做<code>ZOCTimelineViewController</code></p>
+
+<h2>初始化 和 释放</h2>
+
+<p>推荐的做法是 在类里面把<code>dealloc</code>方法放在实现方法里的最上面(放在<code>@synthesize</code> 和 <code>@dynamic</code>后面)同时把<code>init</code>方法放在<code>dealloc</code>方法后面。一旦有多个初始化方法时，你应该把自定义初始化方法作为第一个方法，因为这样做可能更具有逻辑性，次要的初始化方法则紧随其后。自从有了ARC之后，越来越没有必要实现delloc方法了，但是仍然很有必要把dealloc方法靠近在你的init方法中，你可以类比需要成对出现一样。通常在delloc方法中你是撤销一些你在init方法做过的事情。</p>
+
+<p><code>init</code> 方法应该是一下这种结构:</p>
+
+<pre><code>- (instancetype)init
+{
+    self = [super init]; // call the designated initializer
+    if (self) {
+    // Custom initialization
+    }
+    return self;
+}
+</code></pre>
+
+<p>对于为什么要给self 赋值 <code>[super init]</code>的返回值以及如果我们不这样做又会发生什么 是一件非常有意思的事情。</p>
+
+<p>我们习惯使用类似<code>[[NSObject alloc] init]</code>的表达式介于<code>alloc</code> and <code>init</code>正在减弱。Objective-C的特性之一就是叫做<code>两个阶段性的创建</code>,意思就是创建和初始化是两个完全独立的过程,因此这两个不同的方法都需要被调用。
+&ndash;<code>alloc</code>负责对象的创建.这个过程涉及到要在应用的虚拟内存中需要足够的内存来维持这个对象存在，写入了一个<code>isa</code>指针，初始化引用计数器，并且让所有的实例变量归零。
+&ndash;<code>init</code>负责对象的初始化，意味着需要让对象处于一种可用的状态。意思就是给实例变量设立一个对象并且给他一个有效的初始值。</p>
+
+<p><code>alloc</code>方法将会返回一个有效的未初始化的实例，每一个发送给实例的消息都会被翻译成参数名为<code>self</code>的<code>objc_msgSend()</code>方法的调用，并且作为<code>alloc</code>方法的返回值。在这种情况下,<code>self</code>在方法的有效方法内湿绝对有效地，从这两步我们可以得出:第一个发给新创建的实例的方法应该按照协议来说是<code>init</code>方法，值得注意的是，相比返回<code>self</code>，<code>NSObject</code>的中<code>init</code>的实现并没有做得更多</p>
+
+<p><code>init</code>方法中还有一个需要注意的是:作为一个信号，在初始化并不成功（返回<code>nil</code>）的情况下，初始化总会因为各种原因而导致失败，比如:传入值是一种错误的格式，或者是在成功初始化对象的传值失败，</p>
+
+<p>这就告诉我们为什么需要用<code>self = [super init]</code>,如果你的父类表明了她不能成功初始化他们自己，你必须要明白你处于一个不稳定的状态，因此你也没有必要继续初始化工作同时在方法实现中将会返回<code>nil</code>,如果你不这样做的话，对象将无法使用，最终将会导致你的app崩溃。</p>
+
+<p>为了返回一个不同的实例而不是他们曾经调用过的，在<code>init</code>方法中给<code>self</code>重新赋值还是很有必要的，在<a href="#class-cluster">Class cluster</a>或者某些返回同样实例（不可改变）对象的Cocoa类里有这些例子</p>
+
+<h3>指定的 和 次要的 初始化方法</h3>
+
+<p>Objective-C中具有指定型和次要型两种初始化的概念。指定型初始化就是对初始化的参数完全实现。次要型初始化就是一个调用指定型初始化的方法并且会赋予一些默认的参数值。</p>
+
+<pre><code>@implementation ZOCEvent
+
+- (instancetype)initWithTitle:(NSString *)title
+                     date:(NSDate *)date
+                 location:(CLLocation *)location
+{
+    self = [super init];
+    if (self) {
+        _title    = title;
+        _date     = date;
+        _location = location;
+    }
+    return self;
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+                     date:(NSDate *)date
+{
+    return [self initWithTitle:title date:date location:nil];
+}
+
+- (instancetype)initWithTitle:(NSString *)title
+{
+    return [self initWithTitle:title date:[NSDate date] location:nil];
+}
+
+@end
+</code></pre>
+
+<p>在上面的例子中，<code>initWithTitle:date:location:</code>是指定型的初始化，而另外两个就是次要型初始化，因为他们在实现的过程中调用了指定型初始化</p>
+
+<h4>指定型初始化</h4>
+
+<p>一个类有且只有一个指定型初始化方法，所有其他的初始化方法都调用指定型初始化方法(尽管在这个例子中是个例外).
+在这里并没有要求那个初始化方法必须要调用。从类的层级来说，无论哪个指定型初始化方法调用都是有效地，并且要保证在类的层级中从他的根类(<code>NSObject</code>)到你的类，所有的指定型初始化方法都被调用了.
+实际上是说，从他的祖类开始，第一个初始化代码就已经执行了，并且都执行到当前这个类里了；最终给了所有在这个架构里的类机会执行初始化工作.这就表明了:在你做实际工作之前你想要所有从你父类继承的东西是出于一个可用的状态，所有在苹果架构里的类都需要遵守这个规则并且你的类应该同样如此。</p>
+
+<p>当我们定义一个新的类时，这里有三种状态有可能会遇到:</p>
+
+<ol>
+<li>没有必要重载任何初始化方法</li>
+<li>重载了指定型初始化方法</li>
+<li>定义了一个新的初始化方法</li>
+</ol>
+
+
+<p>第一种情况最容易被忽视:我们根本没有必要添加任何具体的逻辑在类的初始化当中，你只要依靠父类的指定型初始化方法就行.
+当你想提供额外的初始化逻辑时你可以考虑重载指定型初始化。你只应该重载目前父类的指定型初始化方法并且确定你的实现方法里调用了你重载的父类方法。
+一个最典型的例子就是看你的<code>UIViewController</code>的子类是否重载了<code>initWithNibName:bundle:</code>:</p>
+
+<pre><code>- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+    // call to the superclass designated initializer
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+    if (self) {
+        // Custom initialization
+    }
+    return self;
+}
+</code></pre>
+
+<p>在<code>UIViewController</code>的子类中如果调用<code>init</code>方法将会是报错，因为调用者在初始化你的类时将会调用<code>initWithNib:bundle</code>这个方法，你自己写的init方法将不会调用。同时这个也和调用任何指定型初始化方法都是有效相矛盾。</p>
+
+<p>如果你想要使用你自己的指定型初始化方法你需要遵守以下三个步骤来确保是这个行为是否正确:</p>
+
+<ol>
+<li>声明你的指定型初始化方法，并且确保会调用当前父类的指定型初始化方法;</li>
+<li>重载父类的指定型初始化方法类并且在里面调用你自己的新的初始化方法;</li>
+<li>记录新的初始化方法;</li>
+</ol>
+
+
+<p>许多开发者都会忘记最后两部，这并不是仅仅很少关心问题，但是在第二步已经是很明显的反对框架的规则，并且会导致一些不确定的行为和bug，让我们来看看正确的实现方法:</p>
+
+<p>@implementation ZOCNewsViewController</p>
+
+<pre><code>- (id)initWithNews:(ZOCNews *)news
+{
+    // 调用父类的指定型初始化方法
+    self = [super initWithNibName:nil bundle:nil];
+    if (self) {
+        _news = news;
+    }
+    return self;
+}
+
+// 重载父类的指定型初始化方法
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle     *)nibBundleOrNil
+{
+    // 调用新的指定型初始化方法
+    return [self initWithNews:nil];
+}
+</code></pre>
+
+<p>如果你没有重载<code>initWithNibName:bundle:</code>方法并且调用者决定用这个方法初始化（将是一个完美的选择）,那么<code>initWithNews:</code>将不会被调用同时会导致不正确的初始化次序，因为那个类的具体的初始化逻辑将不会被执行.</p>
+
+<p>尽管我们可以推断哪个方法是指定型初始化方法,但是明确点清晰点还是好的(未来你或者其他的要在你的代码基础上工作的人将会感谢你).这里有两种策略你可以考虑去使用:
+第一个就是在文档中明确表明那个方法是指定型初始化方法，但是最好 你要对你的编译器反倒满意并且你可以通过使用编译器官方的<code>__attribute__((objc_designated_initializer))</code>来标明你的意图
+通过这个直接做法同样也会使得编译器帮助你，同时如果在你的指定型初始化方法中你没有调用父类的指定型初始化方法，编译器则会报出一个警告</p>
+
+<p>因此，在没有调用类的指定型初始化方法中(反过来只提供了必要的参数)同时调用类的架构中其他的指定型方法将会使得类处于一种无用的状态.参考之前的例子,并没有并没有需要提供news参数<code>ZOCNewsViewController</code>的指针，在没有news参数的情况下，你可以通过让其他的指定型初始化方法无效来强制调用一个具体的指定型初始化方法。这样 如果你想调用这个方法，通过使用其他的编译器直属的<code>__attribute__((unavailable("Invoke the designated initializer")))</code>将会使得编译器弹出一个错误。</p>
+
+<p>以下是之前例子中的头文件的实现(记住宏的使用使得代码不会重复和不会冗长).</p>
+
+<pre><code>@interface ZOCNewsViewController : UIViewController
+
+- (instancetype)initWithNews:(ZOCNews *)news ZOC_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle   *)nibBundleOrNil ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
+- (instancetype)init ZOC_UNAVAILABLE_INSTEAD(initWithNews:);
+</code></pre>
+
+<p>从上面的描述我们可以得出一个结论：你不能在指定型初始化方法中调用次要型初始化方法(如果你遵守协议的话，次要型初始化方法将会调用指定型初始化方法),如果这样做的话，调用将会触发并且重载子类的初始化方法，最终导致无限的递归.</p>
+
+<p>但是对于这些规则，有一个是例外的，对象是否遵守<code>NSCoding</code>协议，并且它是通<code>initWithCoder:</code>来初始化的。</p>
+
+<p>我们要去区分对象的父类什么时候遵循<code>NSCoding</code>协议</p>
+
+<p>在之前的例子中，如果你只是调用<code>[super initWithCoder:]</code>，你将有可能在指定型初始化方法中共用一些初始化代码;然而把代码转移到私有方法中能够很好的处理这个问题(i.e.  <code>p_commonInit</code>)</p>
+
+<p>当你的父类并没有遵守<code>NSCoding</code>协议时，推荐的做法就是把<code>initWithCoder:</code>设为次要型初始化方法，并且调用<code>self</code>指定型初始化方法。但是你会发现这样做违背了苹果的建议<a href="https://developer.apple.com/library/mac/documentation/cocoa/Conceptual/Archiving/Articles/codingobjects.html#//apple_ref/doc/uid/20000948-BCIHBJDE">Archives and Serializations Programming Guide</a> :</p>
+
+<blockquote><p>对象首先会调用父类的指定型初始化方法来初始化继承后的状态</p></blockquote>
+
+<p>遵守这个话将会导致不确定的行为，如果你的类不是<code>NSObject</code>直属子类的话</p>
+
+<h4>次要型初始化</h4>
+
+<p>正如上面所说，次要型初始化方法就是一些列提供默认值或者行为给指定型初始化方法的方法。
+也就是说，在这些方法中，你分本不需要做任何的强制初始化工作并且，你也不用假装认定这些方法被调用了。我们唯一需要做的是保证指定型初始化方法被调用了.</p>
+
+<p>这就意味着在你的指定型初始化方法中你应该总是调用其他的次要型初始化方法或者你的 <code>self</code>指定型初始化方法,某些时候，因为失误，我们会输入成<code>self</code>，这样做的话就没有遵循初始化的步骤了</p>
+
+<h5>引用文档</h5>
+
+<ul>
+<li><a href="https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCreation.html">https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/ObjectCreation.html</a></li>
+<li><a href="https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html">https://developer.apple.com/library/ios/documentation/General/Conceptual/CocoaEncyclopedia/Initialization/Initialization.html</a></li>
+<li><a href="https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/MultipleInitializers.html">https://developer.apple.com/library/ios/Documentation/General/Conceptual/DevPedia-CocoaCore/MultipleInitializers.html</a></li>
+<li><a href="https://blog.twitter.com/2014/how-to-objective-c-initializer-patterns">https://blog.twitter.com/2014/how-to-objective-c-initializer-patterns</a></li>
+</ul>
+
+
+<h3>instancetype</h3>
+
+<p>我们我经常没有意识到Cocoa到处都是一些规则，因为他们可以使得编译器更加灵活。不管这个编译器是否用了<code>alloc</code> 或 <code>init</code>方法，他们都知道，尽管返回值是<code>id</code>，这些方法都会返回一个接收类型的类的实例。因此也会允许编译器提供并且强制类型检查(i.e 检查方法调用的返回实例是有效的).Clang聪明之处就在于一个叫做<a href="http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">相关结果类型</a>的东西,意思就是:</p>
+
+<blockquote><p>发送给alloc和init方法的消息将会有一个和接收类的实例静态类型</p></blockquote>
+
+<p>想了解更多的自动识别的相关结果类型，请参阅<a href="(http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">appropriate section</a>)Clang语言扩展指导</p>
+
+<p>相关结果类型清楚地表明了，通过使用<code>instancetype</code>关键字作为返回值类型，这对在工厂方法或者构造器的使用非常有益。这将会隐藏编译器正确的值隐藏，可能更重要的是，子类也会执行的更加正确;</p>
+
+<pre><code>@interface ZOCPerson
++ (instancetype)personWithName:(NSString *)name;
+@end
+</code></pre>
+
+<p>尽管如此，根据Clang编译器中的详细描述，<code>id</code>可以被编译器认为<code>instancetype</code>，在<code>alloc</code> or <code>init</code> 的情况下，我们强烈建议使用<code>instancetype</code>作为类的返回值，并且让实例方法返回一个类的实例.你在你自己的api里最好也沿用这个习惯,再一次通过微调你的代码来提高代码的可阅读性:一眼就可以看出那个方法是返回类的实例。很长一段时期你都会感谢你做的这些.</p>
+
+<h5>参考资料</h5>
+
+<ul>
+<li><a href="http://tewha.net/2013/02/why-you-should-use-instancetype-instead-of-id/">http://tewha.net/2013/02/why-you-should-use-instancetype-instead-of-id/</a></li>
+<li><a href="http://tewha.net/2013/01/when-is-id-promoted-to-instancetype/">http://tewha.net/2013/01/when-is-id-promoted-to-instancetype/</a></li>
+<li><a href="http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types">http://clang.llvm.org/docs/LanguageExtensions.html#related-result-types</a></li>
+<li><a href="http://nshipster.com/instancetype/">http://nshipster.com/instancetype/</a></li>
+</ul>
+
+
+<h3>初始化模式</h3>
+
+<h4>类簇</h4>
+
+<p>苹果官方文档对类簇的描述是:</p>
+
+<p>关于一个对 公共抽象父类下的私有的，混合的子类进行分组的架构</p>
+
+<p>如果你对这个描述感到熟悉的话，那么你的直觉是正确的。类簇可以被认为是苹果对抽象工厂设计模式的隐喻。之所以提类簇这个概念很简单:
+在你初始化过程中你将会有一个抽象类，作为初始化方法的参数来适用于一个逻辑和实例化一个具体的子类
+public facing 类应该对它内部的子类很熟悉 因此能够返回一个最合适完成这个任务的私有子类。这个设计模式非常有用因为它让只认识与对象通讯的接口的调用者那里消除了初始化逻辑复杂性，并没有过多的关注实现部分。类簇在苹果的框架里广泛的使用。比如NSNumber，根据提供的不同的数据类型，会返回一个合适的子类。还有NSArray，返回一个具体的且最佳存储的子类。</p>
+
+<p>这个设计模式的魅力在于：调用者可以完全不了解具体的子类。事实上可以再没有泄露任何具体实现的情况下设计一个库来交换返回的类。只要调用者完全遵守建立在抽象类下的协议</p>
+
+<p>在我们的经验中，类簇的使用对移除许多条件型代码非常有用。一个典型的例子就是你在iPad和iOS拥有相同的UIViewController子类，但是行为的不同却取决于设备的不同。一个比较幼稚的实现方法就是在需要这个逻辑的方法里添加一些条件代码来检查这个设备。尽管最初条件逻辑应用的地方也许十分少，但是最后都会很自然低在多处使用她。一种更好的设计模式是通过创建一个抽象的和一般的ViewController来完成。为了应对所有的设备，它将会包含所有共享的逻辑和两种不同专属的子类。一般的viewcontroller将会检查当前设备并且根据设备的不同来返回最合适的子类。</p>
+
+<pre><code>@implementation ZOCKintsugiPhotoViewController
+
+- (id)initWithPhotos:(NSArray *)photos
+{
+    if ([self isMemberOfClass:ZOCKintsugiPhotoViewController.class]) {
+        self = nil;
+
+        if ([UIDevice isPad]) {
+            self = [[ZOCKintsugiPhotoViewController_iPad alloc]     initWithPhotos:photos];
+        }
+        else {
+            self = [[ZOCKintsugiPhotoViewController_iPhone alloc]   initWithPhotos:photos];
+        }
+        return self;
+    }
+    return [super initWithNibName:nil bundle:nil];
+}
+
+@end
+</code></pre>
+
+<p>上面的代码告诉我们如何创建一个类簇。首先 <code>[self isMemberOfClass:ZOCKintsugiPhotoViewController.class]</code> 语句是为了阻止重载子类当中的初始化方法的必要来避免陷入无线递归。如果之前的检查是true,<code>[[ZOCKintsugiPhotoViewController alloc] initWithPhotos:photos]</code>这个方法将会被调用,<code>self = nil</code>是为了移除那些即将被释放<code>ZOCKintsugiPhotoViewController</code>实例的引用。
+让我们假设我们正在iPhone上运行这些代码，<code>ZOCKintsugiPhotoViewController_iPhone</code>并没有重载<code>initWithPhotos:</code>方法。在这种情况下，当我们执行<code>self = [[ZOCKintsugiPhotoViewController_iPhone alloc] initWithPhotos:photos];</code>时，<code>ZOCKintsugiPhotoViewController</code>将会被调用，并且当第一次检查出现时，发现并不是<code>ZOCKintsugiPhotoViewController</code> 因此调用<code>return [super initWithNibName:nil bundle:nil];</code>肯定会失败。正如前面强调的的初始化需要遵守正确的初始化步骤</p>
+
+<h4>单例</h4>
+
+<p>大体上，尽可能的避免使用单例，而是使用独立注入。不过不可避免的单例对象应该使用线程安全模式来创建一个共享的实例。在GCD中。我们可能会使用到<code>dispatch_once()</code></p>
+
+<pre><code>+ (instancetype)sharedInstance
+{
+    static id sharedInstance = nil;
+    static dispatch_once_t onceToken = 0;
+    dispatch_once(&amp;onceToken, ^{
+        sharedInstance = [[self alloc] init];
+    });
+        return sharedInstance;
+}
+</code></pre>
+
+<p>dispatch_once()的使用 取代下面的老式的:</p>
+
+<pre><code>+ (instancetype)sharedInstance
+{
+    static id sharedInstance;
+    @synchronized(self) {
+        if (sharedInstance == nil) {
+            sharedInstance = [[MyClass alloc] init];
+        }
+    }
+    return sharedInstance;
+}
+</code></pre>
+
+<p><code>dispatch_once()</code>的好处就在于它更快，语义也更简洁明了，因为整个dispatch_once()的想法就是&#8221;执行某个东西一次并且只有一次&#8221;，并且非常精准的明白他们所做的。这种方式同样也会阻止[可能的某种的崩溃][单例singleton_cocoasamurai].
+比较经典的可以接受的单例对象就是GPS和设备加速器。尽管单例对象可以子类化，但是这种情况下是很少见的。这个接口将会证明所给的类是用来作为一个单例的。因此，一个公共的<code>sharedInstance</code>类的实例已经足够了并且没有可写的属性暴露出来。</p>
+
+<p>用单例作为类的容器来来共享代码或者应用的层是非常丑陋的，它应该被翻译成设计的气息</p>
+
+<h2>属性</h2>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/01/php-beginner/">Php Beginner</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-01T00:00:00+08:00" pubdate data-updated="true"></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h3>php</h3>
+
+<h4>php 脚本以&lt;?php 开头，以?></h4>
+
+<p>&lt;?php
+//此处是php代码
+?></p>
+
+<ul>
+<li>$color 用来声明一个变量</li>
+<li>echo用来输出类似 iOS NSlog printf 输出语句</li>
+</ul>
+
+
+<h4>php变量规则:</h4>
+
+<ul>
+<li>变量以$符号开头，以后是变量的名称</li>
+<li>变量名称必须以字母或下划线开头</li>
+<li>变量名称不能以数字开头</li>
+<li>变量名称只能包含字母数字字符和下划线（A-z、0-9 以及 _）</li>
+<li>变量名称对大小写敏感（$y 与 $Y 是两个不同的变量）</li>
+</ul>
+
+
+<h5>注释： php变量名称 对大小写敏感</h5>
+
+<h4>php变量的创建</h4>
+
+<ul>
+<li>php 没有创建变量的命令，变量会在首次为其赋值时被创建</li>
+</ul>
+
+
+<h4>php变量作用域</h4>
+
+<ul>
+<li>函数之外声明的变量拥有 Global 作用域，只能在函数以外进行访问。</li>
+<li>函数内部声明的变量拥有 LOCAL 作用域，只能在函数内部进行访问。</li>
+</ul>
+
+
+<h4>global</h4>
+
+<ul>
+<li>global 关键词用于访问函数内的全局变量。</li>
+</ul>
+
+
+<h4>static</h4>
+
+<ul>
+<li>通常，当函数完成/执行后，会删除所有变量。不过，有时我需要不删除某个局部变量。实现这一点需要更进一步的工作。要完成这一点，请在您首次声明变量时使用 static 关键词</li>
+</ul>
+
+
+<h4>echo 和 print 之间的差异</h4>
+
+<ul>
+<li>echo- 能够输出一个以上的字符串</li>
+<li>print-只能输出一个字符串，并始终返回1</li>
+</ul>
+
+
+<h4>var_dump()返回变量的数据类型和值</h4>
+
+<h4>php 创建对象</h4>
+
+<pre><code>    &lt;?php
+    class Car
+    {
+        var $color;
+        function Car($color="green") {
+        $this-&gt;color = $color;
+        }
+        function what_color(){
+            return $this-&gt;color;
+        }
+    }
+    ?&gt;
+</code></pre>
+
+<h4>php NULL 值</h4>
+
+<p>NULL 值标示变量是否为空。也用于区分空字符串与空值数据库</p>
+
+<h4>php 字符串函数</h4>
+
+<pre><code>    * strlen() 字符串长度
+    * strpos() 函数用于检索字符串内指定的字符或文本。
+            strpos("Hello world!","world");
+    *   
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/ios-interview-note/">iOS Interview Note</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/09/06/ios-block/">iOS-block</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/19/ios-autolayout/">iOS&#8212;AutoLayout</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/18/pythonbi-ji/">Python笔记</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/08/06/ru-he-ti-gao-ios/">如何提高iOS</a>
+      </li>
+    
+  </ul>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Young -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+
+
+
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
