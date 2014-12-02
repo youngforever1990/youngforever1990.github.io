@@ -4,7 +4,7 @@
   <title><![CDATA[黄杨的技术博客]]></title>
   <link href="http://youngforever1990.github.io/atom.xml" rel="self"/>
   <link href="http://youngforever1990.github.io/"/>
-  <updated>2014-09-16T08:52:33+08:00</updated>
+  <updated>2014-12-02T22:10:43+08:00</updated>
   <id>http://youngforever1990.github.io/</id>
   <author>
     <name><![CDATA[Young]]></name>
@@ -12,6 +12,354 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Swift 困惑]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/12/02/swift-kun-huo/"/>
+    <updated>2014-12-02T22:10:28+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/12/02/swift-kun-huo</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Understanding the Objective C Runtime]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/11/01/understanding-the-objective-c-runtime/"/>
+    <updated>2014-11-01T21:31:16+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/11/01/understanding-the-objective-c-runtime</id>
+    <content type="html"><![CDATA[<h2>Objective C Runtime</h2>
+
+<pre><code>runtime 就是让你不仅仅只是知道 target doMethiodWith:var1 ,而是翻译为objc_msgSend(target,@selector(doMehodWith:),var1)，通过编译器，了解Objective-C runtime将会是你对Objective-C有更深的理解，并且明白app是如何运行的。
+</code></pre>
+
+<h2>Objective C 是开源的</h2>
+
+<pre><code>(Runtime)[http://opensource.apple.com]  
+</code></pre>
+
+<h2>Objective C 是动态语言</h2>
+
+<pre><code>运行时决定的，
+
+[self doSomethingWithVar:var1]; 
+
+translate into:
+
+objc_msgSend(self,@selector(doSomethingWithVar:),var1);
+
+除了这些之外，我们根本无法知道在运行时做了些什么？
+</code></pre>
+
+<h2>What is Objective-C Runtime</h2>
+
+<pre><code>Selector 是 在OC 中的 选择器，类似于 C 语言 中的 C 结构体，作为 一个对象 需要执行的方法，定义如下：
+typedef struct objc_selector *SEL;
+
+使用方法如下：
+
+SEL aSEL = @selector（movieTitle);
+
+Message:
+
+[target getMoveTitleForObjective:obj];
+
+一个Objective C 消息 都是 需要两个[]，你需要发送消息的目标对象以及任何你要发送的参数，OC的消息与函数调用有些不同，当你在OC中发送消息时，对象并不意味着他会马上去执行他，对象会检查是谁给他发的消息，同时根据此来决定执行不同的方法或者指向另外的对象，在运行时查看OC中的类 你会发现：
+
+typedef struct objc_class *Class;
+typedef struct objc_object{
+
+    Class isa;
+}*id;
+
+OC中的类都有一个结构体，同时有 一个object 结构体；所有的objc_object 有一个类指针定义为isa，这就是我们专业术语中的isa point isa 指针，这个isa 指针在 运行时一直存在并且需要检查一个object 是什么类，以及是否有与之相应的选择器当你给object发送消息时。最后我们看到了id 指针，
+
+
+struct Block_literal_a{
+
+void *isa ;// c初始化，stack block 或者 global block
+int flags;
+int reserved;
+void (*invoke)(void * ,...)
+struct Block_descriptor_1{
+unsigned long int reserved; // NULL
+unsigned long int size;
+//optional helper functions
+void (*copy_helper)(void *dst,void *src);
+void(*dispose_helper(void *src);
+
+}*descriptor;
+//imported variables;
+
+};
+BLocks 设计的和OC runtime 机制非常相符 所以他们可以喝消息响应类似 -retain,release-copy
+
+typedif id (*IMP)(id self,SEL _cmd ,...)
+IMP 是函数指针，指向到编译器产生给你的方法实现如果你是OC的，这个就会在OC runtime时触发的方法，最基本的实现如下：
+@interface  MyClass :NSObject{
+
+//var 
+
+NSInteger counter;
+}
+//methods
+-(void)doFoo;
+@end
+
+但是在运行时跟踪如下：
+
+#if !__OBJC2__
+Class super_class                                        OBJC2_UNAVAILABLE;
+const char *name                                         OBJC2_UNAVAILABLE;
+long version                                             OBJC2_UNAVAILABLE;
+long info                                                OBJC2_UNAVAILABLE;
+long instance_size                                       OBJC2_UNAVAILABLE;
+struct objc_ivar_list *ivars                             OBJC2_UNAVAILABLE;
+struct objc_method_list **methodLists                    OBJC2_UNAVAILABLE;
+struct objc_cache *cache                                 OBJC2_UNAVAILABLE;
+struct objc_protocol_list *protocols                     OBJC2_UNAVAILABLE;
+#endif 
+
+
+我们会发现一个 class 会引用他的父类，名字实例变量和方法，缓存和继承过来的协议。在runtime时需要这些信息当和与你的类或实例的消息响应的时候。
+</code></pre>
+
+<h2>xxxxxx</h2>
+
+<pre><code>之前说 所有的Objective -C 类 都是对象，同时 在运行时通过创建Meta Class处理这些。当你发送消息类似 [NSObject alloc]你实际上给类对象(Class object)发消息,并且 class 是一个meta class 实例，并且 他自身也是 root meta class， 如果你说的是 NSObject 的子类，你的类指向的是 NSObeject，因为他是父类，但是所有的Meta class 都会指向root meta class 因为他们的父类，所有的meta class都有类方法，给他们的方法他们响应的消息列表中。 所以当你发送一个消息类似 [NSObject alloc] 然后 objc_msgSend()寻找meta class 来看 它和哪个响应，然后回去寻找这个方法，然后执行他。
+
+MyOjbect *object  = [MyObject alloc]init]'
+
+第一个我们执行的方法是 +alloc ， 正如文档中描述的： 实例变量中的isa 实例变量，将会初始哈u数据结构来描述这个类 ，以及设置其他实例变量的内存，所以继承苹果的NSObject 类，我么你不仅继承他的属性，而且还继承了一个能力：在内存中更容易的allocate 和 创建对象 来匹配  运行时需要的结构及 类的大小。
+</code></pre>
+
+<h3>Class Cache 是什么 (objc__cache *cache)</h3>
+
+<pre><code>当一个Objective-C runtime 通过isa 指针检查一个对象时，他会找到一个对象实现很多方法；但是你可能会只能调用他们的一小部分，同时无法查找到dispatch table 给所有的选择器，当他每次查找时,所以类会实现一个 cache 缓存， 无论你搜索是通过一个类的 dispatch table 或者 找到相应的选择器 ，并且把他放入缓存中，所以当objc _msgsend查找一个类的选择器时，他首先会查找类的缓存。这个操作理论上，一旦你在一个类里调用了一个消息，你之后可能会调用相同的消息，所以我们会考虑这种方法，如果我们有一个NSObject的子类MyObject ，运行如下代码:
+
+MyObject *obj = [MyObject alloc]init];
+
+@implement Myobject
+-(id)init{
+    if (self  = super init){
+        [self setVarA:@"blah"];
+    }
+    return self;
+}
+
+@end;
+
+
+执行过程如下:
+
+    1. [MyObject alloc] 执行这一句,MyObject  并没有实现alloc，所以在这个类里我们将无法找到 +alloc 因此会指向他的父类 NSObject 
+    2. 我们问 NSObject 是否响应 +alloc这个方法,是的，有响应，+alloc 将会检查 接收类是 MyObject，同时会alloc 与之相应大小的内存块同时会初始化一个isa pointer指针给MyObject 类，因此我们也就有了一个实例并且把+alloc放到MyObject类的NSObject类缓存里
+    3，到现在，我们给类发送了一条消息，但是现在我么你发送了一条只是叫做 -init的实例消息，或者初始化构造器，当然 我们的类与消息相应，所以-(id)init 将会放入缓存中
+    4。self = [super init ]调用，super是一个魔法型的关键字将会指向对象的父类 所以我们将会到NSObject同时调用它的init 方法.这些做完了将会确保OOP正确的运行，在他们的所有将会初始化正确的的变量同时之后你可以正确的初始化你的变量，并且重载你确实需要的父类的方法。在NSObject 实例中，并没有重大的发生，但是并不总是这样，有时候一些重要的初始化会发送 ，like this ：
+
+
+
+
+#import &lt; Foundation/Foundation.h&gt;
+
+@interface MyObject : NSObject
+{
+ NSString *aString;
+}
+
+@property(retain) NSString *aString;
+
+@end
+
+@implementation MyObject
+
+-(id)init
+    {
+if (self = [super init]) {
+[self setAString:nil];
+    }
+return self;
+}
+
+@synthesize aString;
+
+@end
+
+
+
+int main (int argc, const char * argv[]) {
+    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
+
+ id obj1 = [NSMutableArray alloc];
+ id obj2 = [[NSMutableArray alloc] init];
+
+id obj3 = [NSArray alloc];
+id obj4 = [[NSArray alloc] initWithObjects:@"Hello",nil];
+
+NSLog(@"obj1 class is %@",NSStringFromClass([obj1 class]));
+NSLog(@"obj2 class is %@",NSStringFromClass([obj2 class]));
+
+NSLog(@"obj3 class is %@",NSStringFromClass([obj3 class]));
+NSLog(@"obj4 class is %@",NSStringFromClass([obj4 class]));
+
+id obj5 = [MyObject alloc];
+id obj6 = [[MyObject alloc] init];
+
+NSLog(@"obj5 class is %@",NSStringFromClass([obj5 class]));
+NSLog(@"obj6 class is %@",NSStringFromClass([obj6 class]));
+
+ [pool drain];
+    return 0;
+}
+
+如果我问你 将会输出什么，如果你 是Cocoa的新手，你可能会回答:
+
+    NSMutableArray
+    NSMutableArray 
+    NSArray
+    NSArray
+    MyObject
+    MyObject
+
+但是实际上是这样:
+
+obj1 class is __NSPlaceholderArray
+obj2 class is NSCFArray
+obj3 class is __NSPlaceholderArray
+obj4 class is NSCFArray
+obj5 class is MyObject
+obj6 class is MyObject
+
+这是因为 在 Objective C 这里有一个潜在的 规则给 +alloc 方法来返回一个类的对象，在 +alloc]init] 将会返回另外一个类;
+</code></pre>
+
+<h2>所以在objc_msgSend 将会发生了什么？</h2>
+
+<pre><code>我们 以下列代码为例子:
+
+    self printMessageWithString:@"Hello World!"];
+
+    实际上 他会转义为:
+
+    objc_msgSend(self,@selector(printMessageWithString:),@"Hello World")；
+
+    从这里，我们将会跟随目标对象的isa指针来查找并且确认对象或者他的父类是否有相应的选择器，@selector(printMessageWithString:)，考虑到在这个类里的selector的dispatch table或者他的cache，我们跟踪他的函数指针并且执行他，因此 objc_msgSend()从来不会返回，它开始执行然后根据指针指向对应的方法然后你的方法返回，因此就像Objc_msgSend() 返回，Bill  Bumgarner在 objc_msgSend进行了更加深入的研究。总结他所说的如下:
+    1.检查 忽略的Selector ，short circut，很明显，如果我们在垃圾回收器中运行，我们将会忽略调用-release,-copy,-retain,
+    2.检查 nil 对象，与其他语言的nil对象不同，Objective C 完美的法定规则，因为这里有几个固定的规则，设想如果我们有一个nil目标对象，
+    3.然后我们在类里面查找IMP，我们首先会查找类的缓存，他会查找指针并且跳到相应的函数去
+    4.如果IMP在缓存中没有找到cache，然后就会找到 the class dispatch table，如果根据指针找到了，
+    5. 如果 IMP在cache 或者 dispatch table 中没有找到的话，他会继续跳到 forwarding mechanism，这就意味着，你的代码 将会通过编译器转译为C函数， 所以一个方法类似于说:
+
+    -(int)doComputerWithNum:(int)aNum
+
+    将会转译为：
+
+    int aClass_doComputerWithNum(aClass *self,SEL _cmd,int aNum)
+
+    同时在 Objective-C Runtime中调用 你的方法通过触犯函数指针到这些方法, 现在 我说，你不能直接调用这些转译的方法,但是，Cocoa framework 提供了相应的方法来获取 指针;
+
+//declare C function pointer
+int (computeNum *)(id,SEL,int);
+
+//methodForSelector is COCOA &amp; not ObjC Runtime
+//gets the same function pointer objc_msgSend gets
+computeNum = (int (*)(id,SEL,int))[target       methodForSelector:@selector(doComputeWithNum:)];
+
+//execute the C function pointer returned by the runtime
+computeNum(obj,@selector(doComputeWithNum:),aNum); 
+
+通过这个方法你可以访问函数并且直接的触发它同时使用它来规避runtime的动态性;
+</code></pre>
+
+<h2>Objetive-C Message Forwarding</h2>
+
+<pre><code>在Objective-C中这是非常合法的(或许他是有意的设计决定),来发送消息给那些他们不知道如何响应对象那.一个原因是苹果在他们的文档中给出了来模拟多重继承，尽管OC中并没有直接支持。或者你只是想要抽象你的设计并且隐藏其他对象/类在处理这些消息的场景中。这是在runtime中非常需要的。它运行如下:
+
+1.The Runtime搜索类的缓存和类的dispatch table和所有的父类，但是无法找到具体的方法，
+2.runtime 将会在你的类中调用 +(BOOL)resolveInstanceMethod:(SEL)aSEL ，这将会给你提供一个方法实现的机会，并且告诉runtime你已经解决了这个方法同时如果你现在开始，它现在将会找到这个方法。你将会找到这些类似如下:
+void fooMethod(id obj,SEL _cmd)
+{
+    NSLog(@"Doing,Foo");
+}
+
+你使用 class_addMethod（）来解决她：
+
++(BOOL)resolveInstanceMethod:(SEL)aSEL
+{
+    if (aSEL ==@selector(doFoo:)){
+        class_addMethod(self class),aSEL,(IMP)fooMethod,"v@:");
+        return YES;
+    }
+}
+return [super resolveInstanceMethod];
+}
+
+the "v@:"在最后，是方法正在返回的和他的参数.你可以查看 Type Encoding来确定什么东西可以放进里面;Runtime 之后调用,- (id)forwardingTargetForSelector:(SEL)aSelector. 这些将会给你一个机会()指向Objective C runtime 到响应这条消息的对象，最好在触发更多进程之前做这些。- (void)forwardInvocation:(NSInvocation *)anInvocation 你可以这样实现:
+
+- (id)forwardingTargetForSelector:(SEL)aSelector
+{
+    if(aSelector == @selector(mysteriousMethod:)){
+     return alternateObject;
+    }
+ return [super forwardingTargetForSelector:aSelector];
+}
+
+很明显从这些方法中你并不会返回self，或者它将会导致无线循环 。 runtime 然后试着上一次获取消息给他的目标对象，然后调用- (void)forwardInvocation:(NSInvocation *)anInvocation，如果你从未有看NSInvercation，在O消息中非常根本，一旦你拥有一个NSInvercation 你能改变任何东西包括他的目标对象，选择器，参数:
+-(void)forwardInvocation:(NSInvocation *)invocation
+</code></pre>
+
+<p>{</p>
+
+<pre><code>SEL invSEL = invocation.selector;
+
+if([altObject respondsToSelector:invSEL]) {
+    [invocation invokeWithTarget:altObject];
+} else {
+    [self doesNotRecognizeSelector:invSEL];
+}
+</code></pre>
+
+<p>}</p>
+
+<p>Non Fragile ivars (Modern Runtime)</p>
+
+<p>img(<a href="http://lh6.ggpht.com/_bMMRN3vt0x0/S1eCgoEotAI/AAAAAAAAAxg/mnW4VTLQOnk/nf1.png?imgmax=800">http://lh6.ggpht.com/_bMMRN3vt0x0/S1eCgoEotAI/AAAAAAAAAxg/mnW4VTLQOnk/nf1.png?imgmax=800</a>)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS 8 Tutorial Learning]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/10/27/ios-8-tutorial-learning/"/>
+    <updated>2014-10-27T23:25:04+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/10/27/ios-8-tutorial-learning</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[iOS 8 Tutorial Learnning]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/10/27/ios-8-tutorial-learnning/"/>
+    <updated>2014-10-27T23:23:34+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/10/27/ios-8-tutorial-learnning</id>
+    <content type="html"><![CDATA[
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Photoshop Skill Shortcut Summary]]></title>
+    <link href="http://youngforever1990.github.io/blog/2014/10/27/photoshop-skill-shortcut-summary/"/>
+    <updated>2014-10-27T21:55:35+08:00</updated>
+    <id>http://youngforever1990.github.io/blog/2014/10/27/photoshop-skill-shortcut-summary</id>
+    <content type="html"><![CDATA[<h2>快捷键总结</h2>
+
+<pre><code>矩形 选框工具 是M
+裁剪工具 C
+移动工具 V
+喷枪工具 J 直接把那个微祝福的图片的兴业银行给去掉了 
+文字工具 T
+缩放工具 Z
+</code></pre>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[iOS Interview Note]]></title>

@@ -3,6 +3,36 @@
   
   
   <url>
+    <loc>http://youngforever1990.github.io/blog/2014/12/02/swift-kun-huo/</loc>
+    <lastmod>2014-12-02T22:10:28+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/11/01/understanding-the-objective-c-runtime/</loc>
+    <lastmod>2014-11-01T21:31:16+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/10/27/ios-8-tutorial-learning/</loc>
+    <lastmod>2014-10-27T23:25:04+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/10/27/ios-8-tutorial-learnning/</loc>
+    <lastmod>2014-10-27T23:23:34+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
+    <loc>http://youngforever1990.github.io/blog/2014/10/27/photoshop-skill-shortcut-summary/</loc>
+    <lastmod>2014-10-27T21:55:35+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  
+  <url>
     <loc>http://youngforever1990.github.io/blog/2014/09/06/ios-interview-note/</loc>
     <lastmod>2014-09-06T09:38:42+08:00</lastmod>
     <priority>0.8</priority>
@@ -59,14 +89,14 @@
   
   <url>
     <loc>http://youngforever1990.github.io/blog/archives/</loc>
-    <lastmod>2014-09-16T08:52:33+08:00</lastmod>
+    <lastmod>2014-12-02T22:10:43+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   
   <url>
     <loc>http://youngforever1990.github.io/</loc>
-    <lastmod>2014-09-16T08:52:33+08:00</lastmod>
+    <lastmod>2014-12-02T22:10:43+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
